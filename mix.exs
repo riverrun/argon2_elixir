@@ -29,9 +29,9 @@ defmodule Argon2.Mixfile do
   end
 
   defp package do
-    [files: ["lib", "argon2/src", "mix.exs", "Makefile*", "README.md", "LICENSE"],
+    [files: ["lib", "argon2/include", "argon2/src", "mix.exs", "Makefile*", "README.md", "LICENSE"],
      maintainers: ["David Whitlock"],
-     licenses: ["BSD"],
+     licenses: ["Apache"],
      links: %{"GitHub" => "https://github.com/riverrun/argon2_elixir",
       "Docs" => "http://hexdocs.pm/argon2_elixir"}]
   end
