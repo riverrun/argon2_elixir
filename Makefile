@@ -56,13 +56,10 @@ endif
 
 LIB_SH := $(LIB_NAME).$(LIB_EXT)
 
-all: create_dir $(LIB_SH)
-
-create_dir:
-	mkdir -p priv
+all: $(LIB_SH)
 
 $(LIB_SH): $(SRC)
-	#$(CC) $(CFLAGS) $(LIB_CFLAGS) $^ -o $(LIB_SH)
+	mkdir -p priv
 	$(CC) $(CFLAGS) $(LIB_CFLAGS) $(LDFLAGS) $(SO_LDFLAGS) $^ -o $@
 
 $(GENKAT): $(SRC) $(SRC_GENKAT)
@@ -71,7 +68,6 @@ $(GENKAT): $(SRC) $(SRC_GENKAT)
 test: $(SRC) $(SRC_DIR)/test.c
 	mkdir -p priv
 	$(CC) $(CFLAGS)  -Wextra -Wno-type-limits $^ -o priv/testcase
-	#cd argon2
 	@sh argon2/kats/test.sh
 	priv/testcase
 
@@ -82,4 +78,4 @@ clean:
 	cd $(SRC_DIR)/blake2/ && rm -f *.o
 	cd $(SRC_DIR)/kats/ &&  rm -f kat-* diff* run_* make_*
 
-.PHONY: all create_dir test clean
+.PHONY: all test clean
