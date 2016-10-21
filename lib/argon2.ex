@@ -1,0 +1,23 @@
+defmodule Argon2 do
+  @moduledoc """
+  """
+
+  @compile {:autoload, false}
+  @on_load {:init, 0}
+
+  def init do
+    path = :filename.join(:code.priv_dir(:argon2_elixir), 'argon2_nif')
+    :erlang.load_nif(path, 0)
+  end
+
+  def gen_salt(salt_len \\ 16), do: :crypto.strong_rand_bytes(salt_len)
+
+  def argon2_hash_nif(t_cost, m_cost, parallelism, password, salt, hashlen, raw, argon2_type)
+  def argon2_hash_nif(_, _, _, _, _, _, _, _), do: exit(:nif_library_not_loaded)
+
+  def argon2_verify_nif(stored_hash, password, argon2_type)
+  def argon2_verify_nif(_, _, _), do: exit(:nif_library_not_loaded)
+
+  def verify(_stored_hash, _password, _argon2_type) do
+  end
+end

@@ -30,7 +30,6 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 
 		argon2_hash(t_cost, m_cost, parallelism, pwd.data, pwd.size, salt.data, salt.size,
 				hash, hashlen, NULL, 0, type, ARGON2_VERSION_NUMBER);
-
 		for (i = 0; i < hashlen; i++) {
 			output[i] = enif_make_uint(env, hash[i]);
 		}
@@ -43,27 +42,23 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 
 		argon2_hash(t_cost, m_cost, parallelism, pwd.data, pwd.size, salt.data, salt.size,
 				NULL, hashlen, encoded, encodedlen, type, ARGON2_VERSION_NUMBER);
-
-		/* for (i = 0; i < encodedlen; i++) {
-			output[i] = enif_make_uint(env, encoded[i]);
-		}
-		return enif_make_list_from_array(env, output, encodedlen); */
 		return enif_make_string(env, encoded, ERL_NIF_LATIN1);
 	}
 }
 
 static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-	ErlNifBinary encoded, pwd;
+	char encoded[1024];
+	ErlNifBinary pwd;
 	argon2_type type;
 	int ret;
 
-	if (argc != 3 || !enif_inspect_binary(env, argv[0], &encoded) ||
+	if (argc != 3 || !enif_get_string(env, argv[0], encoded, sizeof(encoded), ERL_NIF_LATIN1) ||
 			!enif_inspect_binary(env, argv[1], &pwd) ||
 			!enif_get_uint(env, argv[2], &type))
 		return enif_make_badarg(env);
 
-	ret = argon2_verify((const char *) encoded.data, pwd.data, pwd.size, type);
+	ret = argon2_verify(encoded, pwd.data, pwd.size, type);
 	return enif_make_int(env, ret);
 }
 
