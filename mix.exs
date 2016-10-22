@@ -27,7 +27,7 @@ defmodule Argon2.Mixfile do
   defp deps do
     [{:elixir_make, "~> 0.3"},
      {:earmark, "~> 1.0", only: :dev},
-     {:ex_doc,  "~> 0.14", only: :dev},
+     {:ex_doc,  "~> 0.14", only: :dev}]
   end
 
   defp package do
