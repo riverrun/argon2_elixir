@@ -1,13 +1,18 @@
 defmodule Argon2Test do
   use ExUnit.Case
 
+  def permute([]), do: [[]]
+  def permute(list) do
+    for x <- list, y <- permute(list -- [x]), do: [x|y]
+  end
+
   def hash_check_password(password, wrong1, wrong2, wrong3) do
-    for mod <- [Argon2.Argon2d, Argon2.Argon2i] do
-      hash = mod.hash_password(password)
-      assert mod.verify_hash(hash, password) == true
-      assert mod.verify_hash(hash, wrong1) == false
-      assert mod.verify_hash(hash, wrong2) == false
-      assert mod.verify_hash(hash, wrong3) == false
+    for argon2_type <- 0..2 do
+      hash = Argon2.hash_pwd_salt(password, [argon2_type: argon2_type])
+      assert Argon2.verify_hash(hash, password, [argon2_type: argon2_type]) == true
+      assert Argon2.verify_hash(hash, wrong1, [argon2_type: argon2_type]) == false
+      assert Argon2.verify_hash(hash, wrong2, [argon2_type: argon2_type]) == false
+      assert Argon2.verify_hash(hash, wrong3, [argon2_type: argon2_type]) == false
     end
   end
 
