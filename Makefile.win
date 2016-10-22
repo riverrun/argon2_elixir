@@ -1,5 +1,5 @@
 # Argon2 password hashing algorithm for use with Elixir
-# Makefile
+# Makefile for use with Windows
 #
 # Copyright 2016 David Whitlock
 #
@@ -53,18 +53,13 @@ ifneq ($(CROSSCOMPILE),)
 	LIB_CFLAGS := -shared -fPIC -fvisibility=hidden -DA2_VISCTL=1
 	SO_LDFLAGS := -Wl,-soname,libargon2.so.0
 else
-	ifeq ($(KERNEL_NAME), Linux)
-	LIB_EXT := so
-	LIB_CFLAGS := -shared -fPIC -fvisibility=hidden -DA2_VISCTL=1
-	SO_LDFLAGS := -Wl,-soname,libargon2.so.0
+	ifeq ($(findstring MINGW, $(KERNEL_NAME)), MINGW)
+		LIB_EXT := dll
+		LIB_CFLAGS := -shared -Wl,--out-implib,lib$(LIB_NAME).$(LIB_EXT).a
 	endif
-	ifeq ($(KERNEL_NAME), Darwin)
-		LIB_EXT := dylib
-		LIB_CFLAGS := -dynamiclib -install_name @rpath/lib$(LIB_NAME).$(LIB_EXT)
-	endif
-	ifeq ($(KERNEL_NAME), $(filter $(KERNEL_NAME),OpenBSD FreeBSD NetBSD))
-		LIB_EXT := so
-		LIB_CFLAGS := -shared -fPIC
+	ifeq ($(findstring MSYS, $(KERNEL_NAME)), MSYS)
+		LIB_EXT := dll
+		LIB_CFLAGS := -shared -Wl,--out-implib,lib$(LIB_NAME).$(LIB_EXT).a
 	endif
 endif
 
@@ -73,7 +68,7 @@ LIB_SH := $(LIB_NAME).$(LIB_EXT)
 all: $(LIB_SH)
 
 $(LIB_SH): $(SRC)
-	mkdir -p priv
+	if NOT EXIST "priv" mkdir "priv"
 	$(CC) $(CFLAGS) $(LIB_CFLAGS) $(LDFLAGS) $(SO_LDFLAGS) $^ -o $@
 
 clean:

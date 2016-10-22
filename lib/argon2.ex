@@ -1,5 +1,6 @@
 defmodule Argon2 do
   @moduledoc """
+  Elixir wrapper for the Argon2 password hashing algorithm.
   """
 
   @compile {:autoload, false}
@@ -11,6 +12,7 @@ defmodule Argon2 do
   end
 
   @doc """
+  Generate a random salt.
   """
   def gen_salt(salt_len \\ 16), do: :crypto.strong_rand_bytes(salt_len)
 
@@ -21,6 +23,7 @@ defmodule Argon2 do
   def argon2_verify_nif(_, _, _), do: exit(:nif_library_not_loaded)
 
   @doc """
+  Hash a password using Argon2.
   """
   def hash_password(password, salt, opts \\ [])
   def hash_password(_, salt, _) when byte_size(salt) < 8 do
@@ -39,6 +42,7 @@ defmodule Argon2 do
   end
 
   @doc """
+  Generate a random salt and hash a password using Argon2.
   """
   def hash_pwd_salt(password, opts \\ []) do
     salt = Keyword.get(opts, :salt_len, 16) |> gen_salt
@@ -46,6 +50,7 @@ defmodule Argon2 do
   end
 
   @doc """
+  Verify an encoded Argon2 hash.
   """
   def verify_hash(stored_hash, password, opts \\ []) do
     hash = :binary.bin_to_list(stored_hash)
