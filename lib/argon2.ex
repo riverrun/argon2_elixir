@@ -22,7 +22,11 @@ defmodule Argon2 do
 
   @doc """
   """
-  def hash_password(password, salt, opts \\ []) do
+  def hash_password(password, salt, opts \\ [])
+  def hash_password(_, salt, _) when byte_size(salt) < 8 do
+    raise ArgumentError, "The salt is too short - it should be 8 characters or longer"
+  end
+  def hash_password(password, salt, opts) do
     argon2_hash_nif(Keyword.get(opts, :t_cost, 3),
                     Keyword.get(opts, :m_cost, 12),
                     Keyword.get(opts, :parallelism, 1),
