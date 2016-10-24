@@ -5,7 +5,7 @@ defmodule Argon2Test do
 
   test "raise error when salt is too short" do
     assert_raise ArgumentError, "The salt is too short - it should be 8 characters or longer", fn ->
-      Argon2.hash_password("password", "notsalt")
+      Argon2.hash_password("password", "notsalt", [])
     end
   end
 

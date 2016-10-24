@@ -1,6 +1,12 @@
 # Argon2
 
+At the moment, this is not ready to be used in production, mainly due to issue #1.
+
 Argon2 password hashing for Elixir.
+
+[Argon2](https://github.com/P-H-C/phc-winner-argon2) is the official winner of the
+Password Hashing Competition, a several year project to identify a successor to
+bcrypt/PBKDF2/scrypt password hashing methods.
 
 So far, this has only been tested on Linux. If you have any difficulties installing
 or using it on your platform, please open an issue.
