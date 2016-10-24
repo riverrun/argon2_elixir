@@ -1,4 +1,4 @@
-defmodule Argon2.ErrorsTest do
+defmodule Argon2ErrorsTest do
   use ExUnit.Case
 
   test "raise error when salt is too short" do
@@ -13,16 +13,11 @@ defmodule Argon2.ErrorsTest do
     end
   end
 
-  test "various error codes and messages" do
-    assert_raise ArgumentError, "Output pointer is NULL", fn ->
-      Argon2.Errors.handle_error(-1)
-    end
-    assert_raise ArgumentError, "Memory cost is too large", fn ->
-      Argon2.Errors.handle_error(-15)
-    end
-    assert_raise ArgumentError, "There is no such version of Argon2", fn ->
-      Argon2.Errors.handle_error(-26)
-    end
+  test "various error messages" do
+    assert Argon2.Base.argon2_error_nif(-12) == 'Time cost is too small'
+    assert Argon2.Base.argon2_error_nif(-21) == 'Associated data pointer is NULL, but ad length is not 0'
+    assert Argon2.Base.argon2_error_nif(-26) == 'There is no such version of Argon2'
+    assert Argon2.Base.argon2_error_nif(-36) == 'Unknown error code'
   end
 
 end

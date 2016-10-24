@@ -92,6 +92,18 @@ static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv* env, int argc, const ERL_NIF_TE
 	return enif_make_int(env, ret);
 }
 
+static ERL_NIF_TERM argon2_error_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+	int error_code;
+	char const *ret;
+
+	if (argc != 1 || !enif_get_int(env, argv[0], &error_code))
+		return enif_make_badarg(env);
+
+	ret = argon2_error_message(error_code);
+	return enif_make_string(env, ret, ERL_NIF_LATIN1);
+}
+
 static int upgrade(ErlNifEnv* env, void** priv_data, void** old_priv_data, ERL_NIF_TERM load_info)
 {
 	return 0;
@@ -100,7 +112,8 @@ static int upgrade(ErlNifEnv* env, void** priv_data, void** old_priv_data, ERL_N
 static ErlNifFunc argon2_nif_funcs[] =
 {
 	{"argon2_hash_nif", 8, argon2_hash_nif},
-	{"argon2_verify_nif", 3, argon2_verify_nif}
+	{"argon2_verify_nif", 3, argon2_verify_nif},
+	{"argon2_error_nif", 1, argon2_error_nif}
 };
 
-ERL_NIF_INIT(Elixir.Argon2, argon2_nif_funcs, NULL, NULL, upgrade, NULL)
+ERL_NIF_INIT(Elixir.Argon2.Base, argon2_nif_funcs, NULL, NULL, upgrade, NULL)
