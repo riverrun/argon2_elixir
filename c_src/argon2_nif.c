@@ -35,6 +35,7 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 	ErlNifBinary pwd, salt;
 	unsigned int t_cost, m, m_cost, parallelism, hashlen, isencoded;
 	argon2_type type;
+	int ret;
 
 	if (argc != 8 || !enif_get_uint(env, argv[0], &t_cost) ||
 			!enif_get_uint(env, argv[1], &m) ||
@@ -53,8 +54,10 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 				salt.size, hashlen, type);
 		char encoded[encodedlen];
 
-		argon2_hash(t_cost, m_cost, parallelism, pwd.data, pwd.size, salt.data, salt.size,
+		ret = argon2_hash(t_cost, m_cost, parallelism, pwd.data, pwd.size, salt.data, salt.size,
 				NULL, hashlen, encoded, encodedlen, type, ARGON2_VERSION_NUMBER);
+		if (ret)
+			return enif_make_int(env, ret);
 		return enif_make_string(env, encoded, ERL_NIF_LATIN1);
 	}
 	else {
@@ -62,8 +65,10 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 		char output[hashlen * 2 + 1];
 		size_t i;
 
-		argon2_hash(t_cost, m_cost, parallelism, pwd.data, pwd.size, salt.data, salt.size,
+		ret = argon2_hash(t_cost, m_cost, parallelism, pwd.data, pwd.size, salt.data, salt.size,
 				hash, hashlen, NULL, 0, type, ARGON2_VERSION_NUMBER);
+		if (ret)
+			return enif_make_int(env, ret);
 		for (i = 0; i < hashlen; i++) {
 			sprintf(output + 2 * i, "%02x", hash[i]);
 		}

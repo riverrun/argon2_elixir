@@ -3,12 +3,6 @@ defmodule Argon2Test do
 
   import Argon2TestHelper
 
-  test "raise error when salt is too short" do
-    assert_raise ArgumentError, "The salt is too short - it should be 8 characters or longer", fn ->
-      Argon2.hash_password("password", "notsalt", [])
-    end
-  end
-
   test "hashing and checking passwords" do
     hash_check("password")
     hash_check("hard2guess")

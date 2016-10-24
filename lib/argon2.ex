@@ -3,6 +3,8 @@ defmodule Argon2 do
   Elixir wrapper for the Argon2 password hashing algorithm.
   """
 
+  alias Argon2.Errors
+
   @compile {:autoload, false}
   @on_load {:init, 0}
 
@@ -25,11 +27,7 @@ defmodule Argon2 do
   @doc """
   Hash a password using Argon2.
   """
-  def hash_password(password, salt, opts \\ [])
-  def hash_password(_, salt, _) when byte_size(salt) < 8 do
-    raise ArgumentError, "The salt is too short - it should be 8 characters or longer"
-  end
-  def hash_password(password, salt, opts) do
+  def hash_password(password, salt, opts \\ []) do
     argon2_hash_nif(Keyword.get(opts, :t_cost, 3),
                     Keyword.get(opts, :m_cost, 12),
                     Keyword.get(opts, :parallelism, 1),
@@ -38,7 +36,7 @@ defmodule Argon2 do
                     Keyword.get(opts, :hashlen, 32),
                     Keyword.get(opts, :encoded, 1),
                     Keyword.get(opts, :argon2_type, 1))
-    |> :binary.list_to_bin
+    |> handle_result
   end
 
   @doc """
@@ -54,9 +52,16 @@ defmodule Argon2 do
   """
   def verify_hash(stored_hash, password, opts \\ []) do
     hash = :binary.bin_to_list(stored_hash)
-    case argon2_verify_nif(hash, password, Keyword.get(opts, :argon2_type, 1)) do
-      0 -> true
-      _ -> false
-    end
+    argon2_verify_nif(hash, password, Keyword.get(opts, :argon2_type, 1))
+    |> handle_result
+  end
+
+  defp handle_result(0), do: true
+  defp handle_result(-35), do: false
+  defp handle_result(result) when is_integer(result) do
+    Errors.handle_error result
+  end
+  defp handle_result(result) do
+    :binary.list_to_bin result
   end
 end
