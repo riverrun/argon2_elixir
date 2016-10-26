@@ -3,20 +3,34 @@ ExUnit.start()
 defmodule Argon2TestHelper do
   use ExUnit.Case
 
+  alias Argon2.Base
+
+  def hashtest(_version, t, m, p, pwd, salt, hexref, mcfref) do
+    hashlen = 32
+    encodedlen = 108
+    {hash, encoded} = Base.hash_nif(t, m, p, pwd, salt, 1, hashlen, encodedlen, 1)
+    assert :binary.list_to_bin(hash) == hexref
+    refute is_integer(encoded)
+    #assert byte_size(hash) == hashlen * 2
+    assert length(hash) == hashlen * 2
+    assert :binary.list_to_bin(encoded) == mcfref
+    assert Base.verify_nif(encoded, pwd, 1) == 0
+  end
+
+  def verify_test_helper(stored_hash, password, version) do
+    Base.verify_nif(:binary.bin_to_list(stored_hash),
+                    password, version)
+  end
+
   def hash_check(password) do
     wrong_list = wrong_passwords(password)
     for argon2_type <- 0..2 do
-      hash = Argon2.hash_pwd_salt(password, [argon2_type: argon2_type])
+      {_, hash} = Argon2.hash_pwd_salt(password, [argon2_type: argon2_type])
       assert Argon2.verify_hash(hash, password, [argon2_type: argon2_type])
       for wrong <- wrong_list do
         refute Argon2.verify_hash(hash, wrong, [argon2_type: argon2_type])
       end
     end
-  end
-
-  def known_vectors do
-    [{0, "45d7ac72e76f242b20b77b9bf9bf9d5915894e669a24e6c6"},
-     {1, "$argon2i$v=19$m=65536,t=2,p=4$c29tZXNhbHQ$RdescudvJCsgt3ub+b+dWRWJTmaaJObG"}]
   end
 
   defp wrong_passwords(password) do

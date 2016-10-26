@@ -3,7 +3,7 @@ defmodule Argon2 do
   Elixir wrapper for the Argon2 password hashing algorithm.
   """
 
-  import Argon2.Base
+  alias Argon2.Base
 
   @doc """
   Generate a random salt.
@@ -14,14 +14,13 @@ defmodule Argon2 do
   Hash a password using Argon2.
   """
   def hash_password(password, salt, opts \\ []) do
-    argon2_hash_nif(Keyword.get(opts, :t_cost, 3),
-                    Keyword.get(opts, :m_cost, 12),
-                    Keyword.get(opts, :parallelism, 1),
-                    password,
-                    salt,
-                    Keyword.get(opts, :hashlen, 32),
-                    Keyword.get(opts, :encoded, 1),
-                    Keyword.get(opts, :argon2_type, 1))
+    {t, m, p, raw_output, hashlen, argon2_type} = get_opts(opts)
+    encodedlen = case opts[:encoded_output] do
+      false -> 0
+      _ -> Base.encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type)
+    end
+    Base.hash_nif(t, m, p, password, salt, raw_output,
+                  hashlen, encodedlen, argon2_type)
     |> handle_result
   end
 
@@ -29,8 +28,7 @@ defmodule Argon2 do
   Generate a random salt and hash a password using Argon2.
   """
   def hash_pwd_salt(password, opts \\ []) do
-    salt = Keyword.get(opts, :salt_len, 16) |> gen_salt
-    hash_password(password, salt, opts)
+    hash_password(password, Keyword.get(opts, :salt_len, 16) |> gen_salt, opts)
   end
 
   @doc """
@@ -38,15 +36,27 @@ defmodule Argon2 do
   """
   def verify_hash(stored_hash, password, opts \\ []) do
     hash = :binary.bin_to_list(stored_hash)
-    argon2_verify_nif(hash, password, Keyword.get(opts, :argon2_type, 1))
+    Base.verify_nif(hash, password, Keyword.get(opts, :argon2_type, 1))
     |> handle_result
+  end
+
+  defp get_opts(opts) do
+    {Keyword.get(opts, :t_cost, 3),
+      Keyword.get(opts, :m_cost, 12),
+      Keyword.get(opts, :parallelism, 1),
+      Keyword.get(opts, :raw_output, 0),
+      Keyword.get(opts, :hashlen, 32),
+      Keyword.get(opts, :argon2_type, 1)}
   end
 
   defp handle_result(0), do: true
   defp handle_result(-35), do: false
   defp handle_result(result) when is_integer(result) do
-    msg = argon2_error_nif(result) |> :binary.list_to_bin
+    msg = Base.error_nif(result) |> :binary.list_to_bin
     raise ArgumentError, msg
+  end
+  defp handle_result({raw, encoded}) do
+    {:binary.list_to_bin(raw), :binary.list_to_bin(encoded)}
   end
   defp handle_result(result) do
     :binary.list_to_bin result

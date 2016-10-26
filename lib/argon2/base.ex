@@ -10,13 +10,16 @@ defmodule Argon2.Base do
     :erlang.load_nif(path, 0)
   end
 
-  def argon2_hash_nif(t_cost, m_cost, parallelism, password, salt, hashlen, encoded, argon2_type)
-  def argon2_hash_nif(_, _, _, _, _, _, _, _), do: exit(:nif_library_not_loaded)
+  def hash_nif(t_cost, m_cost, parallelism, password, salt, raw, hashlen, encodedlen, argon2_type)
+  def hash_nif(_, _, _, _, _, _, _, _, _), do: exit(:nif_library_not_loaded)
 
-  def argon2_verify_nif(stored_hash, password, argon2_type)
-  def argon2_verify_nif(_, _, _), do: exit(:nif_library_not_loaded)
+  def verify_nif(stored_hash, password, argon2_type)
+  def verify_nif(_, _, _), do: exit(:nif_library_not_loaded)
 
-  def argon2_error_nif(error_code)
-  def argon2_error_nif(_), do: exit(:nif_library_not_loaded)
+  def error_nif(error_code)
+  def error_nif(_), do: exit(:nif_library_not_loaded)
+
+  def encodedlen_nif(t_cost, m_cost, parallelism, saltlen, hashlen, argon2_type)
+  def encodedlen_nif(_, _, _, _, _, _), do: exit(:nif_library_not_loaded)
 
 end
