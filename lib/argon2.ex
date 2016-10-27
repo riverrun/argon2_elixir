@@ -13,7 +13,8 @@ defmodule Argon2 do
   @doc """
   Hash a password using Argon2.
   """
-  def hash_password(password, salt, opts \\ []) do
+  def hash_password(password, salt, opts \\ [])
+  def hash_password(password, salt, opts) when is_binary(password) and is_binary(salt) do
     {t, m, p, raw_output, hashlen, argon2_type} = get_opts(opts)
     encodedlen = case opts[:encoded_output] do
       false -> 0
@@ -22,6 +23,9 @@ defmodule Argon2 do
     Base.hash_nif(t, m, p, password, salt, raw_output,
                   hashlen, encodedlen, argon2_type)
     |> handle_result
+  end
+  def hash_password(_, _, _) do
+    raise ArgumentError, "Wrong type - password and salt should be strings"
   end
 
   @doc """
@@ -34,10 +38,14 @@ defmodule Argon2 do
   @doc """
   Verify an encoded Argon2 hash.
   """
-  def verify_hash(stored_hash, password, opts \\ []) do
+  def verify_hash(stored_hash, password, opts \\ [])
+  def verify_hash(stored_hash, password, opts) when is_binary(password) do
     hash = :binary.bin_to_list(stored_hash)
     Base.verify_nif(hash, password, Keyword.get(opts, :argon2_type, 1))
     |> handle_result
+  end
+  def verify_hash(_, _, _) do
+    raise ArgumentError, "Wrong type - password should be a string"
   end
 
   defp get_opts(opts) do
@@ -57,8 +65,5 @@ defmodule Argon2 do
   end
   defp handle_result({raw, encoded}) do
     {:binary.list_to_bin(raw), :binary.list_to_bin(encoded)}
-  end
-  defp handle_result(result) do
-    :binary.list_to_bin result
   end
 end

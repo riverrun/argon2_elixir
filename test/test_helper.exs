@@ -11,7 +11,6 @@ defmodule Argon2TestHelper do
     {hash, encoded} = Base.hash_nif(t, m, p, pwd, salt, 1, hashlen, encodedlen, 1)
     assert :binary.list_to_bin(hash) == hexref
     refute is_integer(encoded)
-    #assert byte_size(hash) == hashlen * 2
     assert length(hash) == hashlen * 2
     assert :binary.list_to_bin(encoded) == mcfref
     assert Base.verify_nif(encoded, pwd, 1) == 0

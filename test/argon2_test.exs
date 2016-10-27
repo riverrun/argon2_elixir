@@ -3,7 +3,6 @@ defmodule Argon2Test do
 
   import Argon2TestHelper
 
-
   test "hashing and checking passwords" do
     hash_check("password")
     hash_check("hard2guess")

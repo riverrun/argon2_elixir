@@ -3,6 +3,8 @@ defmodule Argon2ReferenceTest do
 
   import Argon2TestHelper
 
+  alias Argon2.Base
+
   test "reference implementation tests" do
     version = 0x10
     hashtest(version, 2, 16, 1, "password", "somesalt",
@@ -48,6 +50,11 @@ defmodule Argon2ReferenceTest do
                              "wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA",
                              "password", 1);
     assert ret == -2
+  end
+
+  test "common error states" do
+    ret = Base.hash_nif(1, 1, 1, "password", "diffsalt", 1, 32, 108, 1)
+    assert ret == -14
   end
 
 end
