@@ -1,19 +1,30 @@
 # Argon2
 
-At the moment, this is not ready to be used in production, mainly due to issue #1.
-
 Argon2 password hashing for Elixir.
 
 [Argon2](https://github.com/P-H-C/phc-winner-argon2) is the official winner of the
 Password Hashing Competition, a several year project to identify a successor to
-bcrypt/PBKDF2/scrypt password hashing methods.
+bcrypt / PBKDF2 / scrypt password hashing methods.
 
 So far, this has only been tested on Linux. If you have any difficulties installing
 or using it on your platform, please open an issue.
 
-## Installation
+## Requirements
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+* Elixir version 1.3 or later
+* Erlang / OTP version 18 or later
+  * Erlang needs to be built with the `--enable-dirty-schedulers` flag set
+* A C compiler, such as gcc
+
+### Dirty scheduler
+
+As stated above, you need to build Erlang with dirty scheduler support
+to use this library, which relies on dirty scheduler support in order
+to handle long-running cryptography jobs, by moving them off the main
+Erlang scheduler and letting the dirty schedulers handle the work.
+This keeps the Erlang VM responsive.
+
+## Installation
 
   1. Add `argon2_elixir` to your list of dependencies in `mix.exs`:
 
