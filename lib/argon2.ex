@@ -1,6 +1,9 @@
 defmodule Argon2 do
   @moduledoc """
   Elixir wrapper for the Argon2 password hashing algorithm.
+
+  In most cases, you will just need to use the `hash_pwd_salt/2` and
+  `verify_hash/3` functions.
   """
 
   alias Argon2.Base
@@ -12,16 +15,28 @@ defmodule Argon2 do
 
   @doc """
   Hash a password using Argon2.
+
+  ## Options
+
+  There are six options:
+
+    * t_cost
+    * m_cost
+    * parallelism
+    * encode_output
+    * hashlen
+    * argon2_type
+
   """
   def hash_password(password, salt, opts \\ [])
   def hash_password(password, salt, opts) when is_binary(password) and is_binary(salt) do
-    {t, m, p, raw_output, hashlen, argon2_type, argon2_version} = get_opts(opts)
-    encodedlen = case opts[:encoded_output] do
-      false -> 0
-      _ -> Base.encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type)
+    {t, m, p, encode, hashlen, argon2_type} = get_opts(opts)
+    {raw_output, encodedlen} = if encode do
+      {0, Base.encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type)}
+    else
+      {1, 0}
     end
-    Base.hash_nif(t, m, p, password, salt, raw_output,
-                  hashlen, encodedlen, argon2_type, argon2_version)
+    Base.hash_nif(t, m, p, password, salt, raw_output, hashlen, encodedlen, argon2_type, 0)
     |> handle_result
   end
   def hash_password(_, _, _) do
@@ -52,10 +67,9 @@ defmodule Argon2 do
     {Keyword.get(opts, :t_cost, 3),
       Keyword.get(opts, :m_cost, 12),
       Keyword.get(opts, :parallelism, 1),
-      Keyword.get(opts, :raw_output, 0),
+      Keyword.get(opts, :encode_output, true),
       Keyword.get(opts, :hashlen, 32),
-      Keyword.get(opts, :argon2_type, 1),
-      Keyword.get(opts, :argon2_version, 0)}
+      Keyword.get(opts, :argon2_type, 1)}
   end
 
   defp handle_result(0), do: true
@@ -64,7 +78,6 @@ defmodule Argon2 do
     msg = Base.error_nif(result) |> :binary.list_to_bin
     raise ArgumentError, msg
   end
-  defp handle_result({raw, encoded}) do
-    {:binary.list_to_bin(raw), :binary.list_to_bin(encoded)}
-  end
+  defp handle_result({[], encoded}), do: :binary.list_to_bin(encoded)
+  defp handle_result({raw, _}), do: :binary.list_to_bin(raw)
 end
