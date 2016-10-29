@@ -49,7 +49,7 @@ defmodule Argon2ReferenceTest do
     ret = verify_test_helper("$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ" <>
                              "wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA",
                              "password", 1);
-    assert ret == -2
+    assert ret == -32
   end
 
   test "common error states" do

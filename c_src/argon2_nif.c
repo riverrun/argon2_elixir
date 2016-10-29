@@ -32,8 +32,6 @@
 #include "core.h"
 #include "erl_nif.h"
 
-
-
 ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ErlNifBinary pwd, salt;
@@ -95,7 +93,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	result = argon2_ctx(&context, type);
 
 	if (result != ARGON2_OK) {
-		secure_wipe_memory(out, hashlen);
+		clear_internal_memory(out, hashlen);
 		free(out);
 		return enif_make_int(env, result);
 	}
@@ -111,8 +109,8 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	/* if encoding requested, write it */
 	if (encodedlen) {
 		if (encode_string(encoded, encodedlen, &context, type) != ARGON2_OK) {
-			secure_wipe_memory(out, hashlen); /* wipe buffers if error */
-			secure_wipe_memory(encoded, encodedlen);
+			clear_internal_memory(out, hashlen); /* wipe buffers if error */
+			clear_internal_memory(encoded, encodedlen);
 			free(out);
 			return enif_make_int(env, ARGON2_ENCODING_FAIL);
 		}
