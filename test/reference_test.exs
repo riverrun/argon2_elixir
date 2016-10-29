@@ -6,7 +6,7 @@ defmodule Argon2ReferenceTest do
   alias Argon2.Base
 
   test "reference implementation tests" do
-    version = 0x10
+    version = 0x13
     hashtest(version, 2, 16, 1, "password", "somesalt",
              "c1628832147d9720c5bd1cfd61367078729f6dfb6f8fea9ff98158e0d7816ed0",
              "$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ" <>
@@ -53,8 +53,24 @@ defmodule Argon2ReferenceTest do
   end
 
   test "common error states" do
-    ret = Base.hash_nif(1, 1, 1, "password", "diffsalt", 1, 32, 108, 1)
+    ret = Base.hash_nif(1, 1, 1, "password", "diffsalt", 1, 32, 108, 1, 0x10)
     assert ret == -14
+  end
+
+  test "version ARGON2_VERSION_10" do
+    version = 0x10
+    hashtest(version, 2, 16, 1, "password", "somesalt",
+             "f6c4db4a54e2a370627aff3db6176b94a2a209a62c8e36152711802f7b30c694",
+             "$argon2i$m=65536,t=2,p=1$c29tZXNhbHQ" <>
+             "$9sTbSlTio3Biev89thdrlKKiCaYsjjYVJxGAL3swxpQ")
+    hashtest(version, 2, 18, 1, "password", "somesalt",
+             "3e689aaa3d28a77cf2bc72a51ac53166761751182f1ee292e3f677a7da4c2467",
+             "$argon2i$m=262144,t=2,p=1$c29tZXNhbHQ" <>
+             "$Pmiaqj0op3zyvHKlGsUxZnYXURgvHuKS4/Z3p9pMJGc")
+    hashtest(version, 2, 8, 1, "password", "somesalt",
+             "fd4dd83d762c49bdeaf57c47bdcd0c2f1babf863fdeb490df63ede9975fccf06",
+             "$argon2i$m=256,t=2,p=1$c29tZXNhbHQ" <>
+             "$/U3YPXYsSb3q9XxHvc0MLxur+GP960kN9j7emXX8zwY")
   end
 
 end

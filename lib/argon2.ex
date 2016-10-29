@@ -15,13 +15,13 @@ defmodule Argon2 do
   """
   def hash_password(password, salt, opts \\ [])
   def hash_password(password, salt, opts) when is_binary(password) and is_binary(salt) do
-    {t, m, p, raw_output, hashlen, argon2_type} = get_opts(opts)
+    {t, m, p, raw_output, hashlen, argon2_type, argon2_version} = get_opts(opts)
     encodedlen = case opts[:encoded_output] do
       false -> 0
       _ -> Base.encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type)
     end
     Base.hash_nif(t, m, p, password, salt, raw_output,
-                  hashlen, encodedlen, argon2_type)
+                  hashlen, encodedlen, argon2_type, argon2_version)
     |> handle_result
   end
   def hash_password(_, _, _) do
@@ -54,7 +54,8 @@ defmodule Argon2 do
       Keyword.get(opts, :parallelism, 1),
       Keyword.get(opts, :raw_output, 0),
       Keyword.get(opts, :hashlen, 32),
-      Keyword.get(opts, :argon2_type, 1)}
+      Keyword.get(opts, :argon2_type, 1),
+      Keyword.get(opts, :argon2_version, 0)}
   end
 
   defp handle_result(0), do: true

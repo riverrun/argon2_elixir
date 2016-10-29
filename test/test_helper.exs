@@ -5,14 +5,14 @@ defmodule Argon2TestHelper do
 
   alias Argon2.Base
 
-  def hashtest(_version, t, m, p, pwd, salt, hexref, mcfref) do
+  def hashtest(version, t, m, p, pwd, salt, hexref, mcfref) do
     hashlen = 32
     encodedlen = 108
-    {hash, encoded} = Base.hash_nif(t, m, p, pwd, salt, 1, hashlen, encodedlen, 1)
+    {hash, encoded} = Base.hash_nif(t, m, p, pwd, salt, 1, hashlen, encodedlen, 1, version)
     assert :binary.list_to_bin(hash) == hexref
     refute is_integer(encoded)
     assert length(hash) == hashlen * 2
-    assert :binary.list_to_bin(encoded) == mcfref
+    if version > 0x10, do: assert :binary.list_to_bin(encoded) == mcfref
     assert Base.verify_nif(encoded, pwd, 1) == 0
   end
 

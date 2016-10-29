@@ -23,21 +23,27 @@
  * software. If not, they may be obtained at the above URLs.
  */
 
-#include "argon2.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
+#include "argon2.h"
+#include "encoding.h"
+#include "core.h"
 #include "erl_nif.h"
 
-static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+
+
+ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ErlNifBinary pwd, salt;
-	unsigned int t_cost, m, m_cost, parallelism, raw_output, hashlen, encodedlen;
+	unsigned int t_cost, m, m_cost, parallelism, raw_output, hashlen, encodedlen, version;
 	argon2_type type;
-	int ret;
+	argon2_context context;
+	int result;
+	uint8_t *out;
 
-	if (argc != 9 || !enif_get_uint(env, argv[0], &t_cost) ||
+	if (argc != 10 || !enif_get_uint(env, argv[0], &t_cost) ||
 			!enif_get_uint(env, argv[1], &m) ||
 			!enif_get_uint(env, argv[2], &parallelism) ||
 			!enif_inspect_binary(env, argv[3], &pwd) ||
@@ -45,28 +51,76 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 			!enif_get_uint(env, argv[5], &raw_output) ||
 			!enif_get_uint(env, argv[6], &hashlen) ||
 			!enif_get_uint(env, argv[7], &encodedlen) ||
-			!enif_get_uint(env, argv[8], &type))
+			!enif_get_uint(env, argv[8], &type) ||
+			!enif_get_uint(env, argv[9], &version))
 		return enif_make_badarg(env);
 
 	m_cost = (1<<m);
 
-	uint8_t hash[hashlen];
-	char output[hashlen * 2 + 1];
+	char hash[hashlen * 2 + 1];
 	char encoded[encodedlen];
 
-	ret = argon2_hash(t_cost, m_cost, parallelism, pwd.data, pwd.size, salt.data, salt.size,
-			hash, hashlen, encoded, encodedlen, type, ARGON2_VERSION_NUMBER);
-	if (ret)
-		return enif_make_int(env, ret);
+	if (hashlen > ARGON2_MAX_OUTLEN) {
+		return enif_make_int(env, ARGON2_OUTPUT_TOO_LONG);
+	}
 
+	if (hashlen < ARGON2_MIN_OUTLEN) {
+		return enif_make_int(env, ARGON2_OUTPUT_TOO_SHORT);
+	}
+
+	out = malloc(hashlen);
+	if (!out) {
+		return enif_make_int(env, ARGON2_MEMORY_ALLOCATION_ERROR);
+	}
+
+	context.out = (uint8_t *)out;
+	context.outlen = (uint32_t)hashlen;
+	context.pwd = CONST_CAST(uint8_t *)pwd.data;
+	context.pwdlen = (uint32_t)pwd.size;
+	context.salt = CONST_CAST(uint8_t *)salt.data;
+	context.saltlen = (uint32_t)salt.size;
+	context.secret = NULL;
+	context.secretlen = 0;
+	context.ad = NULL;
+	context.adlen = 0;
+	context.t_cost = t_cost;
+	context.m_cost = m_cost;
+	context.lanes = parallelism;
+	context.threads = parallelism;
+	context.allocate_cbk = NULL;
+	context.free_cbk = NULL;
+	context.flags = ARGON2_DEFAULT_FLAGS;
+	context.version = version ? version : ARGON2_VERSION_NUMBER;
+
+	result = argon2_ctx(&context, type);
+
+	if (result != ARGON2_OK) {
+		secure_wipe_memory(out, hashlen);
+		free(out);
+		return enif_make_int(env, result);
+	}
+
+	/* if raw hash requested, write it */
 	if (raw_output) {
 		size_t i;
 
 		for (i = 0; i < hashlen; i++)
-			sprintf(output + i * 2, "%02x", hash[i]);
+			sprintf(hash + i * 2, "%02x", out[i]);
 	}
 
-	return enif_make_tuple2(env, enif_make_string(env, output, ERL_NIF_LATIN1),
+	/* if encoding requested, write it */
+	if (encodedlen) {
+		if (encode_string(encoded, encodedlen, &context, type) != ARGON2_OK) {
+			secure_wipe_memory(out, hashlen); /* wipe buffers if error */
+			secure_wipe_memory(encoded, encodedlen);
+			free(out);
+			return enif_make_int(env, ARGON2_ENCODING_FAIL);
+		}
+	}
+	secure_wipe_memory(out, hashlen);
+	free(out);
+
+	return enif_make_tuple2(env, enif_make_string(env, hash, ERL_NIF_LATIN1),
 			enif_make_string(env, encoded, ERL_NIF_LATIN1));
 }
 
@@ -125,7 +179,7 @@ static int upgrade(ErlNifEnv* env, void** priv_data, void** old_priv_data, ERL_N
 
 static ErlNifFunc argon2_nif_funcs[] =
 {
-	{"hash_nif", 9, argon2_hash_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
+	{"hash_nif", 10, argon2_hash_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{"verify_nif", 3, argon2_verify_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{"error_nif", 1, argon2_error_nif},
 	{"encodedlen_nif", 6, argon2_encodedlen_nif}
