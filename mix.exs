@@ -1,7 +1,7 @@
 defmodule Argon2.Mixfile do
   use Mix.Project
 
-  @version "0.9.0"
+  @version "0.9.1"
 
   @description """
   Argon2 password hashing algorithm for Elixir
@@ -25,13 +25,13 @@ defmodule Argon2.Mixfile do
   end
 
   defp deps do
-    [{:elixir_make, "~> 0.3"},
+    [{:elixir_make, "~> 0.4"},
      {:earmark, "~> 1.0", only: :dev},
      {:ex_doc,  "~> 0.14", only: :dev}]
   end
 
   defp package do
-    [files: ["lib", "c_src/argon2_nif.c", "argon2/include", "argon2/src", "mix.exs", "Makefile*", "README.md"],
+    [files: ["lib", "c_src", "argon2/include", "argon2/src", "mix.exs", "Makefile*", "README.md"],
      maintainers: ["David Whitlock"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/riverrun/argon2_elixir",
