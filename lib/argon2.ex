@@ -4,6 +4,10 @@ defmodule Argon2 do
 
   In most cases, you will just need to use the `hash_pwd_salt/2` and
   `verify_hash/3` functions from this module.
+
+  ## Argon2
+
+
   """
 
   alias Argon2.Base
@@ -15,6 +19,9 @@ defmodule Argon2 do
 
   @doc """
   Generate a random salt and hash a password using Argon2.
+
+  For more information about the available options, see the documentation
+  for Argon2.Base.hash_password/3.
   """
   def hash_pwd_salt(password, opts \\ []) do
     Base.hash_password(password, Keyword.get(opts, :salt_len, 16) |> gen_salt, opts)
@@ -22,6 +29,15 @@ defmodule Argon2 do
 
   @doc """
   Verify an encoded Argon2 hash.
+
+  ## Options
+
+  There is one option:
+
+    * argon2_type - Argon2 type
+      * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
+      * the default is 1 (Argon2i)
+
   """
   def verify_hash(stored_hash, password, opts \\ [])
   def verify_hash(stored_hash, password, opts) when is_binary(password) do

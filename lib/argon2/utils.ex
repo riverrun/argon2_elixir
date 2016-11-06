@@ -1,6 +1,6 @@
 defmodule Argon2.Utils do
   @moduledoc """
-  Various tools.
+  Tools to be used with Argon2.
   """
 
   alias Argon2.Base
@@ -9,11 +9,9 @@ defmodule Argon2.Utils do
   Hash a password with Argon2 and print out a report.
   """
   def report(password, salt, opts \\ []) do
-    {t, m, p, _, _, hashlen, argon2_type} = Base.get_opts(opts)
-    encodedlen = Base.encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type)
-    {exec_time, {raw, encoded}} = :timer.tc(Base, :hash_nif,
-      [t, m, p, password, salt, 1, hashlen, encodedlen, argon2_type, 0])
-    Base.verify_nif(encoded, password, argon2_type)
+    {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, opts ++ [format: :report]])
+    {raw, encoded, {t, m, p, _, _, _, argon2_type}} = result
+    Argon2.verify_hash(encoded, password, argon2_type: argon2_type)
     |> format_result(argon2_type, t, m, p, raw, encoded, exec_time)
   end
 
@@ -21,12 +19,12 @@ defmodule Argon2.Utils do
     IO.puts """
     Type:\t\t#{format_type(argon2_type)}
     Iterations:\t#{t}
-    Memory:\t\t#{m}
+    Memory:\t\t#{trunc(:math.pow(2, m - 10))} MiB
     Parallelism:\t#{p}
-    Hash:\t\t#{:binary.list_to_bin(raw)}
-    Encoded:\t#{:binary.list_to_bin(encoded)}
+    Hash:\t\t#{raw}
+    Encoded:\t#{encoded}
     #{format_time(exec_time)} seconds
-    Verification #{if check == 0, do: "ok", else: "failed"}
+    Verification #{if check, do: "ok", else: "failed"}
     """
   end
 

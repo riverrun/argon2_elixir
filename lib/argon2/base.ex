@@ -1,5 +1,9 @@
 defmodule Argon2.Base do
   @moduledoc """
+  Lower-level api for Argon2.
+
+  These functions can be useful if you want more control over some
+  of the options.
   """
 
   @compile {:autoload, false}
@@ -24,33 +28,40 @@ defmodule Argon2.Base do
 
   @doc """
   Hash a password using Argon2.
+
+  ## Options
+
+  There are six options:
+
+    * t_cost - time cost, or number of iterations
+      * 3 is the default
+    * m_cost - memory cost
+      * 12 is the default - this will produce a memory cost of 2 ^ 12 KiB
+    * parallelism - number of threads
+      * 1 is the default
+    * format - output format
+      * this value can be :raw_hash, :report or :encoded
+      * :encoded is the default
+    * hashlen - length of the hash (in bytes)
+      * the default is 32
+    * argon2_type - Argon2 type
+      * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
+      * the default is 1 (Argon2i)
+
   """
   def hash_password(password, salt, opts \\ [])
   def hash_password(password, salt, opts) when is_binary(password) and is_binary(salt) do
-    {t, m, p, raw_hash, encoded_hash, hashlen, argon2_type} = get_opts(opts)
+    {t, m, p, raw_hash, encoded_hash, hashlen, argon2_type} = options = get_opts(opts)
     encodedlen = if encoded_hash,
       do: encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type), else: 0
     hash_nif(t, m, p, password, salt, raw_hash, hashlen, encodedlen, argon2_type, 0)
-    |> handle_result
+    |> handle_result(options)
   end
   def hash_password(_, _, _) do
     raise ArgumentError, "Wrong type - password and salt should be strings"
   end
 
-  @doc """
-  Options for the hash_pwd_salt/3, hash_password/3 and report/3 functions.
-
-  There are six options:
-
-    * t_cost
-    * m_cost
-    * parallelism
-    * format
-    * hashlen
-    * argon2_type
-
-  """
-  def get_opts(opts) do
+  defp get_opts(opts) do
     {raw_hash, encoded_hash} = case opts[:format] do
                                  :raw_hash -> {1, false}
                                  :report -> {1, true}
@@ -65,13 +76,13 @@ defmodule Argon2.Base do
      Keyword.get(opts, :argon2_type, 1)}
   end
 
-  defp handle_result(result) when is_integer(result) do
+  defp handle_result(result, _) when is_integer(result) do
     msg = error_nif(result) |> :binary.list_to_bin
     raise ArgumentError, msg
   end
-  defp handle_result({[], encoded}), do: :binary.list_to_bin(encoded)
-  defp handle_result({raw, []}), do: :binary.list_to_bin(raw)
-  defp handle_result({raw, encoded}) do
-    {:binary.list_to_bin(raw), :binary.list_to_bin(encoded)}
+  defp handle_result({[], encoded}, _), do: :binary.list_to_bin(encoded)
+  defp handle_result({raw, []}, _), do: :binary.list_to_bin(raw)
+  defp handle_result({raw, encoded}, options) do
+    {:binary.list_to_bin(raw), :binary.list_to_bin(encoded), options}
   end
 end

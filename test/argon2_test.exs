@@ -17,7 +17,7 @@ defmodule Argon2Test do
   end
 
   test "output both raw and encoded hash" do
-    {raw, encoded} = Base.hash_password("password", "somesalt", format: :report)
+    {raw, encoded, _} = Base.hash_password("password", "somesalt", format: :report)
     assert is_binary(raw)
     assert is_binary(encoded)
     refute String.starts_with?(raw, "$argon2")
