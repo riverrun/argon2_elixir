@@ -32,6 +32,8 @@
 #include "core.h"
 #include "erl_nif.h"
 
+#define MAX_ENCODEDLEN 1024
+
 ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ErlNifBinary pwd, salt;
@@ -128,7 +130,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 
 static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-	char encoded[1024];
+	char encoded[MAX_ENCODEDLEN];
 	ErlNifBinary pwd;
 	argon2_type type;
 	int ret;

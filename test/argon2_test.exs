@@ -2,17 +2,26 @@ defmodule Argon2Test do
   use ExUnit.Case
 
   import Argon2TestHelper
+  alias Argon2.Base
 
   test "only output encoded hash" do
-    result = Argon2.hash_password("password", "somesalt")
+    result = Base.hash_password("password", "somesalt")
     assert is_binary(result)
     assert String.starts_with?(result, "$argon2")
   end
 
   test "only output raw hash" do
-    result = Argon2.hash_password("password", "somesalt", encode_output: false)
+    result = Base.hash_password("password", "somesalt", format: :raw_hash)
     assert is_binary(result)
     refute String.starts_with?(result, "$argon2")
+  end
+
+  test "output both raw and encoded hash" do
+    {raw, encoded} = Base.hash_password("password", "somesalt", format: :report)
+    assert is_binary(raw)
+    assert is_binary(encoded)
+    refute String.starts_with?(raw, "$argon2")
+    assert String.starts_with?(encoded, "$argon2")
   end
 
   test "hashing and checking passwords" do
