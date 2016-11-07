@@ -7,6 +7,11 @@ defmodule Argon2.Utils do
 
   @doc """
   Hash a password with Argon2 and print out a report.
+
+  ## Options
+
+  See the documentation for Argon2.Base.hash_password/3 for details
+  about all the available options.
   """
   def report(password, salt, opts \\ []) do
     {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, opts ++ [format: :report]])

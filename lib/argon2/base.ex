@@ -3,7 +3,8 @@ defmodule Argon2.Base do
   Lower-level api for Argon2.
 
   These functions can be useful if you want more control over some
-  of the options.
+  of the options. In most cases, you will not need to call these
+  functions directly.
   """
 
   @compile {:autoload, false}
@@ -33,14 +34,18 @@ defmodule Argon2.Base do
 
   There are six options:
 
-    * t_cost - time cost, or number of iterations
+    * t_cost - time cost
+      * the amount of computation, given in number of iterations
       * 3 is the default
-    * m_cost - memory cost
-      * 12 is the default - this will produce a memory cost of 2 ^ 12 KiB
-    * parallelism - number of threads
+    * m_cost - memory usage
+      * 12 is the default - this will produce a memory usage of 2 ^ 12 KiB
+    * parallelism - number of parallel threads
       * 1 is the default
     * format - output format
-      * this value can be :raw_hash, :report or :encoded
+      * this value can be
+        * :encoded - encoded with Argon2 crypt format
+        * :raw_hash - raw hash output in hexadecimal format
+        * :report - raw hash and encoded hash, together with the options used
       * :encoded is the default
     * hashlen - length of the hash (in bytes)
       * the default is 32
