@@ -36,9 +36,9 @@ defmodule Argon2.Base do
 
     * t_cost - time cost
       * the amount of computation, given in number of iterations
-      * 3 is the default
+      * 6 is the default
     * m_cost - memory usage
-      * 12 is the default - this will produce a memory usage of 2 ^ 12 KiB
+      * 16 is the default - this will produce a memory usage of 2 ^ 16 KiB (64 MiB)
     * parallelism - number of parallel threads
       * 1 is the default
     * format - output format
@@ -72,8 +72,8 @@ defmodule Argon2.Base do
                                  :report -> {1, true}
                                  _ -> {0, true}
                                end
-    {Keyword.get(opts, :t_cost, 3),
-     Keyword.get(opts, :m_cost, 12),
+    {Keyword.get(opts, :t_cost, 6),
+     Keyword.get(opts, :m_cost, 16),
      Keyword.get(opts, :parallelism, 1),
      raw_hash,
      encoded_hash,
