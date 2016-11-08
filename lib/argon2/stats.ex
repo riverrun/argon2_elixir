@@ -1,4 +1,4 @@
-defmodule Argon2.Utils do
+defmodule Argon2.Stats do
   @moduledoc """
   Tools to be used with Argon2.
   """
