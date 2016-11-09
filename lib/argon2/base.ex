@@ -30,9 +30,9 @@ defmodule Argon2.Base do
   @doc """
   Hash a password using Argon2.
 
-  ## Options
+  ## Configurable parameters
 
-  There are six options:
+  The following three parameters can be set in the config file:
 
     * t_cost - time cost
       * the amount of computation, given in number of iterations
@@ -41,6 +41,24 @@ defmodule Argon2.Base do
       * 16 is the default - this will produce a memory usage of 2 ^ 16 KiB (64 MiB)
     * parallelism - number of parallel threads
       * 1 is the default
+
+  If you are hashing passwords in your tests, it can be useful to add
+  the following to the `config/test.exs` file:
+
+      config :argon2_elixir,
+        t_cost: 2,
+        m_cost: 12
+
+  NB. do not use these values in production.
+
+  ## Options
+
+  There are six options (t_cost, m_cost and parallelism can be used
+  to override the values set in the config):
+
+    * t_cost - time cost
+    * m_cost - memory usage
+    * parallelism - number of parallel threads
     * format - output format
       * this value can be
         * :encoded - encoded with Argon2 crypt format
@@ -72,9 +90,9 @@ defmodule Argon2.Base do
                                  :report -> {1, true}
                                  _ -> {0, true}
                                end
-    {Keyword.get(opts, :t_cost, 6),
-     Keyword.get(opts, :m_cost, 16),
-     Keyword.get(opts, :parallelism, 1),
+    {Keyword.get(opts, :t_cost, Application.get_env(:argon2_elixir, :t_cost, 6)),
+     Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 16)),
+     Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 1)),
      raw_hash,
      encoded_hash,
      Keyword.get(opts, :hashlen, 32),

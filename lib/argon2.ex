@@ -2,8 +2,12 @@ defmodule Argon2 do
   @moduledoc """
   Elixir wrapper for the Argon2 password hashing function.
 
-  In most cases, you will just need to use the `hash_pwd_salt/2` and
-  `verify_hash/3` functions from this module.
+  Before using Argon2, you will need to configure it. Read the documentation
+  for Argon2.Stats for more information about configuration. After that,
+  most users will just need to use the `hash_pwd_salt/2` and `verify_hash/3`
+  functions from this module.
+
+  For a lower-level API, see Argon2.Base.
 
   ## Argon2
 
@@ -28,6 +32,31 @@ defmodule Argon2 do
 
   More information is available at the [Argon2 reference C implementation
   repository](https://github.com/P-H-C/phc-winner-argon2)
+
+  ## Comparison with Bcrypt / Pbkdf2
+
+  Currently, the most popular password hashing functions are probably
+  Bcrypt, which was presented in 1999, and Pbkdf2 (pbkdf2_sha256 or
+  pbkdf2_sha512), which dates back to 2000. Both are strong password
+  hashing functions with no known vulnerabilities, and their algorithms
+  have been used and widely reviewed for over 10 years. To help you
+  decide whether you should use Argon2 instead, here is a brief comparison
+  of Bcrypt / Pbkdf2 with Argon2.
+
+  Argon2 is a lot newer, and this can be considered to be both an
+  advantage and a disadvantage. On the one hand, Argon2 benefits
+  from more recent research, and it is designed to combat the kinds
+  of attacks which have become more common over the past decade,
+  such as the use of GPUs or dedicated hardware. On the other hand,
+  Argon2 has not received the same amount of scrutiny that Bcrypt / Pbkdf2
+  has.
+
+  As Argon2 is a memory-hard function, it is designed to use a lot more
+  memory than Bcrypt / Pbkdf2. With Bcrypt / Pbkdf2, attackers can use
+  GPUs to hash several hundred / thousand passwords in parallel. This
+  can result in significant gains in the time it takes an attacker to
+  crack passwords. Argon2's memory cost means that the benefit of using
+  GPUs is not as great.
 
   """
 

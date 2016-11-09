@@ -1,6 +1,32 @@
 defmodule Argon2.Stats do
   @moduledoc """
-  Tools to be used with Argon2.
+  Module to provide statistics for the Argon2 password hashing function.
+
+  The default parameters are 6 for t_cost, 16 for m_cost (64 MiB of memory)
+  and 1 for parallelism. However, the parameters you use depend a lot on
+  the hardware you are using, and so it is important to measure the
+  function's running time and adjust the parameters accordingly.
+
+  Below is a guide on how to choose the parameters and what kind of
+  running time is recommended.
+
+  ## Choosing parameters
+
+    1. Decide how much memory the function should use
+    2. Decide how many threads to use
+    3. Set the t_cost to 3 and measure the time it takes to hash a password
+      * If the function is too slow, reduce memory usage, but keep t_cost at 3
+      * If the function is too fast, increase the t_cost
+
+  For online use - for example, logging in on a website - the function should
+  take anything between 250 milliseconds and one second. For a desktop
+  application, the function could take longer, anything from several seconds
+  to 5 seconds, as long as the user only has to log in once per session.
+  These numbers are based on the [libsodium documentation for
+  Argon2i](https://download.libsodium.org/doc/password_hashing/the_argon2i_function.html)
+  and [NIST recommendations](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf)
+  (the NIST recommendations are currently being reviewed).
+
   """
 
   alias Argon2.Base
@@ -8,13 +34,11 @@ defmodule Argon2.Stats do
   @doc """
   Hash a password with Argon2 and print out a report.
 
-  ## Options
-
-  See the documentation for Argon2.Base.hash_password/3 for details
-  about all the available options.
+  This function hashes the password and salt with Argon2.Base.hash_password/3
+  and prints out statistics which can help you choose how to configure Argon2.
   """
   def report(password, salt, opts \\ []) do
-    {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, opts ++ [format: :report]])
+    {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, [format: :report] ++ opts])
     {raw, encoded, {t, m, p, _, _, _, argon2_type}} = result
     Argon2.verify_hash(encoded, password, argon2_type: argon2_type)
     |> format_result(argon2_type, t, m, p, raw, encoded, exec_time)

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.11.0
+
+* Enhancements
+  * Made t_cost, m_cost and parallelism configurable with the config file.
+    * This makes it easier to set different values for tests
+
 ## v0.10.0
 
 * Enhancements
