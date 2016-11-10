@@ -15,15 +15,27 @@ defmodule Argon2.Base do
     :erlang.load_nif(path, 0)
   end
 
+  @doc """
+  Hash a password using Argon2.
+  """
   def hash_nif(t_cost, m_cost, parallelism, password, salt, raw, hashlen, encodedlen, argon2_type, argon2_version)
   def hash_nif(_, _, _, _, _, _, _, _, _, _), do: exit(:nif_library_not_loaded)
 
+  @doc """
+  Verify a password using Argon2.
+  """
   def verify_nif(stored_hash, password, argon2_type)
   def verify_nif(_, _, _), do: exit(:nif_library_not_loaded)
 
+  @doc """
+  Translate the error code to an error message.
+  """
   def error_nif(error_code)
   def error_nif(_), do: exit(:nif_library_not_loaded)
 
+  @doc """
+  Calculate the length of the encoded hash.
+  """
   def encodedlen_nif(t_cost, m_cost, parallelism, saltlen, hashlen, argon2_type)
   def encodedlen_nif(_, _, _, _, _, _), do: exit(:nif_library_not_loaded)
 

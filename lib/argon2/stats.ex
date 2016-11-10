@@ -2,10 +2,15 @@ defmodule Argon2.Stats do
   @moduledoc """
   Module to provide statistics for the Argon2 password hashing function.
 
-  The default parameters are 6 for t_cost, 16 for m_cost (64 MiB of memory)
-  and 1 for parallelism. However, the parameters you use depend a lot on
-  the hardware you are using, and so it is important to measure the
-  function's running time and adjust the parameters accordingly.
+  The default parameters are:
+
+    * t_cost: 6
+    * m_cost: 16 (64 MiB of memory)
+    * parallelism: 1
+
+  However, the parameters you use depend a lot on the hardware you are
+  using, and so it is important to measure the function's running time
+  and adjust the parameters accordingly.
 
   Below is a guide on how to choose the parameters and what kind of
   running time is recommended.

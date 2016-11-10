@@ -51,12 +51,13 @@ defmodule Argon2 do
   Argon2 has not received the same amount of scrutiny that Bcrypt / Pbkdf2
   has.
 
-  As Argon2 is a memory-hard function, it is designed to use a lot more
-  memory than Bcrypt / Pbkdf2. With Bcrypt / Pbkdf2, attackers can use
-  GPUs to hash several hundred / thousand passwords in parallel. This
-  can result in significant gains in the time it takes an attacker to
-  crack passwords. Argon2's memory cost means that the benefit of using
-  GPUs is not as great.
+  One of the main differences is that Argon2 is a memory-hard function,
+  and this means that it is designed to use a lot more memory than
+  Bcrypt / Pbkdf2. With Bcrypt / Pbkdf2, attackers can use GPUs to hash
+  several hundred / thousand passwords in parallel. This can result in
+  significant gains in the time it takes an attacker to crack passwords.
+  Argon2's memory cost means that it is a lot more difficult for attackers
+  to benefit from using GPUs.
 
   """
 
