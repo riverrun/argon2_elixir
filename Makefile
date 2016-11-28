@@ -60,7 +60,7 @@ else
 	endif
 	ifeq ($(KERNEL_NAME), Darwin)
 		LIB_EXT := dylib
-		LIB_CFLAGS := -dynamiclib -install_name @rpath/lib$(LIB_NAME).$(LIB_EXT)
+		LIB_CFLAGS := -dynamiclib -undefined dynamic_lookup -install_name @rpath/lib$(LIB_NAME).$(LIB_EXT)
 	endif
 	ifeq ($(KERNEL_NAME), $(filter $(KERNEL_NAME),OpenBSD FreeBSD NetBSD))
 		LIB_EXT := so
