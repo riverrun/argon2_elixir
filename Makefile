@@ -27,14 +27,14 @@
 SRC_INC = argon2/include
 SRC_DIR = argon2/src
 
-SRC = $(SRC_DIR)/argon2.c $(SRC_DIR)/core.c $(SRC_DIR)/blake2/blake2b.c \
+SRC = $(SRC_DIR)/argon2.c $(SRC_DIR)/core.c $(SRC_DIR)/blake2/blake2b.c\
       $(SRC_DIR)/thread.c $(SRC_DIR)/encoding.c c_src/argon2_nif.c
 
 ERLANG_PATH = $(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
 CFLAGS += -std=c89 -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I$(ERLANG_PATH)
 
 OPTTARGET ?= native
-OPTTEST := $(shell $(CC) -I$(SRC_INC) -I$(SRC_DIR) -march=$(OPTTARGET) $(SRC_DIR)/opt.c -c \
+OPTTEST := $(shell $(CC) -I$(SRC_INC) -I$(SRC_DIR) -march=$(OPTTARGET) $(SRC_DIR)/opt.c -c\
 	-o /dev/null 2>/dev/null; echo $$?)
 
 ifneq ($(OPTTEST), 0)
@@ -44,39 +44,32 @@ else
 	SRC += $(SRC_DIR)/opt.c
 endif
 
-BUILD_PATH := $(shell pwd)
 KERNEL_NAME := $(shell uname -s)
 
-LIB_NAME = priv/argon2_nif
+LIB_NAME = priv/argon2_nif.so
 ifneq ($(CROSSCOMPILE),)
-	LIB_EXT := so
 	LIB_CFLAGS := -shared -fPIC -fvisibility=hidden -DA2_VISCTL=1
 	SO_LDFLAGS := -Wl,-soname,libargon2.so.0
 else
 	ifeq ($(KERNEL_NAME), Linux)
-	LIB_EXT := so
-	LIB_CFLAGS := -shared -fPIC -fvisibility=hidden -DA2_VISCTL=1
-	SO_LDFLAGS := -Wl,-soname,libargon2.so.0
+		LIB_CFLAGS := -shared -fPIC -fvisibility=hidden -DA2_VISCTL=1
+		SO_LDFLAGS := -Wl,-soname,libargon2.so.0
 	endif
 	ifeq ($(KERNEL_NAME), Darwin)
-		LIB_EXT := dylib
-		LIB_CFLAGS := -dynamiclib -undefined dynamic_lookup -install_name @rpath/lib$(LIB_NAME).$(LIB_EXT)
+		LIB_CFLAGS := -dynamiclib -undefined dynamic_lookup
 	endif
 	ifeq ($(KERNEL_NAME), $(filter $(KERNEL_NAME),OpenBSD FreeBSD NetBSD))
-		LIB_EXT := so
 		LIB_CFLAGS := -shared -fPIC
 	endif
 endif
 
-LIB_SH := $(LIB_NAME).$(LIB_EXT)
+all: $(LIB_NAME)
 
-all: $(LIB_SH)
-
-$(LIB_SH): $(SRC)
+$(LIB_NAME): $(SRC)
 	mkdir -p priv
-	$(CC) $(CFLAGS) $(LIB_CFLAGS) $(LDFLAGS) $(SO_LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(LIB_CFLAGS) $(SO_LDFLAGS) $^ -o $@
 
 clean:
-	rm -f $(LIB_SH)
+	rm -f $(LIB_NAME)
 
 .PHONY: all clean
