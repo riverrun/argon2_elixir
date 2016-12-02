@@ -24,36 +24,32 @@
 # software. If not, they may be obtained at the above URLs.
 #
 
+!IF [where /Q Makefile.auto.win]
+# The file doesn't exist, so don't include it.
+!ELSE
+!INCLUDE Makefile.auto.win
+!IF [del /Q /F Makefile.auto.win] == 0
+!ENDIF
+!ENDIF
+
 SRC_INC = argon2/include
 SRC_DIR = argon2/src
+NMAKE = nmake /$(MAKEFLAGS)
+CFLAGS = /O2 /EHsc /I"$(BCRYPT_PATH)"
 
 SRC = $(SRC_DIR)/argon2.c $(SRC_DIR)/core.c $(SRC_DIR)/blake2/blake2b.c\
-      $(SRC_DIR)/thread.c $(SRC_DIR)/encoding.c c_src/argon2_nif.c
+      $(SRC_DIR)/thread.c $(SRC_DIR)/encoding.c $(SRC_DIR)/ref.c c_src/argon2_nif.c
 
-ERLANG_PATH = $(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
-CFLAGS += -std=c89 -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I$(ERLANG_PATH)
+all: priv\argon2_nif.dll
 
-OPTTARGET ?= native
-OPTTEST := $(shell $(CC) -I$(SRC_INC) -I$(SRC_DIR) -march=$(OPTTARGET) $(SRC_DIR)/opt.c -c\
-	-o /dev/null 2>/dev/null; echo $$?)
+Makefile.auto.win:
+	erl -eval "io:format(\"~s~n\", [lists:concat([\"ERTS_INCLUDE_PATH=\", code:root_dir(), \"/erts-\", erlang:system_info(version), \"/include\"])])" -s init stop -noshell > $@
 
-ifneq ($(OPTTEST), 0)
-	SRC += $(SRC_DIR)/ref.c
-else
-	CFLAGS += -march=$(OPTTARGET)
-	SRC += $(SRC_DIR)/opt.c
-endif
-
-LIB_NAME = priv/argon2_nif.dll
-LIB_CFLAGS := -shared -Wl,--out-implib,lib$(LIB_NAME).a
-
-all: $(LIB_NAME)
-
-$(LIB_NAME): $(SRC)
+!IFDEF ERTS_INCLUDE_PATH
+priv\argon2_nif.dll:
 	if NOT EXIST "priv" mkdir "priv"
-	$(CC) $(CFLAGS) $(LIB_CFLAGS) $(SO_LDFLAGS) $^ -o $@
-
-clean:
-	rm -f $(LIB_NAME)
-
-.PHONY: all clean
+	$(CC) $(CFLAGS) /I"$(ERTS_INCLUDE_PATH)" /LD /MD /Fe$@ $(NIF_SRC)
+!ELSE
+priv\argon2_nif.dll: Makefile.auto.win
+	$(NMAKE) /F Makefile.win priv\argon2_nif.dll
+!ENDIF
