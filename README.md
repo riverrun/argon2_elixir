@@ -6,8 +6,11 @@ Argon2 password hashing for Elixir.
 Password Hashing Competition, a several year project to identify a successor to
 bcrypt / PBKDF2 / scrypt password hashing methods.
 
-So far, this has only been tested on Linux. If you have any difficulties installing
-or using it on your platform, please open an issue.
+This has been tested on Linux and Mac OS X.
+It builds on Windows, but it has not been tested with dirty schedulers
+enabled yet.
+If you have any difficulties installing or using it on your platform,
+please open an issue.
 
 ## Requirements
 
