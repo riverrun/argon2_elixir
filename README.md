@@ -33,7 +33,7 @@ This keeps the Erlang VM responsive.
 
     ```elixir
     def deps do
-      [{:argon2_elixir, "~> 0.11"}]
+      [{:argon2_elixir, "~> 0.12"}]
     end
     ```
 

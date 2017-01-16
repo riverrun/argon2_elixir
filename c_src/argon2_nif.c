@@ -1,6 +1,6 @@
 /* Argon2 password hashing algorithm for use with Elixir
  *
- * Copyright 2016 David Whitlock
+ * Copyright 2016-2017 David Whitlock
  *
  * This is licensed under the Apache Public License 2.0
  *

@@ -113,4 +113,35 @@ defmodule Argon2 do
   def verify_hash(_, _, _) do
     raise ArgumentError, "Wrong type - password should be a string"
   end
+
+  @doc """
+  A dummy verify function to help prevent user enumeration.
+
+  This function hashes the password and then returns false, and it is
+  intended to make it more difficult for any potential attacker to find
+  valid usernames by using timing attacks. For more information, see the
+  section below on username obfuscation.
+
+  It is important that this function is called with the same options
+  that are used to hash the password.
+
+  ## Username obfuscation
+
+  In addition to keeping passwords secret, hiding the precise username
+  can help make online attacks more difficult. An attacker would then
+  have to guess a username / password combination, rather than just
+  a password, to gain access.
+
+  This does not mean that the username should be kept completely secret.
+  Adding a short numerical suffix to a user's name, for example, would be
+  sufficient to increase the attacker's work considerably.
+
+  If you are implementing a policy of hiding usernames, it is important
+  to make sure that the username is not revealed by any other part of
+  your application.
+  """
+  def no_user_verify(opts \\ []) do
+    hash_pwd_salt("", opts)
+    false
+  end
 end

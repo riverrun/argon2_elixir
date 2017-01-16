@@ -1,9 +1,14 @@
 # Changelog
 
+## v0.12.0
+
+* Enhancements
+  * Added `no_user_verify` dummy verify function to help prevent username enumeration
+
 ## v0.11.0
 
 * Enhancements
-  * Made t_cost, m_cost and parallelism configurable with the config file.
+  * Made t_cost, m_cost and parallelism configurable with the config file
     * This makes it easier to set different values for tests
 
 ## v0.10.0

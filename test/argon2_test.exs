@@ -52,4 +52,13 @@ defmodule Argon2Test do
     encoded_hash_check("Я❤três☕ où☔")
   end
 
+  test "user obfuscation function always returns false" do
+    assert Argon2.no_user_verify() == false
+  end
+
+  test "duration of user obfuscation function is configurable" do
+    {short_time, _} = :timer.tc(Argon2, :no_user_verify, [[t_cost: 3, m_cost: 10]])
+    {long_time, _} = :timer.tc(Argon2, :no_user_verify, [[t_cost: 6, m_cost: 12]])
+    assert long_time > short_time
+  end
 end
