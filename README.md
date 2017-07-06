@@ -14,9 +14,10 @@ please open an issue.
 
 ## Requirements
 
-* Elixir version 1.3 or later
+* Elixir version 1.4 or later
 * Erlang / OTP version 18 or later
-  * Erlang needs to be built with the `--enable-dirty-schedulers` flag set
+  * Erlang (< 20) needs to be built with the `--enable-dirty-schedulers` flag set
+  * Erlang 20 has dirty schedulers enabled by default
 * A C compiler, such as gcc
 
 ### Dirty scheduler
@@ -33,19 +34,14 @@ This keeps the Erlang VM responsive.
 
     ```elixir
     def deps do
-      [{:argon2_elixir, "~> 0.12"}]
+      [{:argon2_elixir, "~> 1.0"}]
     end
     ```
 
-  2. Ensure `argon2_elixir` is started before your application:
+  2. Configure `argon2_elixir` - see the documentation for Argon2.Stats for more details
 
-    ```elixir
-    def application do
-      [applications: [:argon2_elixir]]
-    end
-    ```
-
-  3. Configure `argon2_elixir` - see the documentation for Argon2.Stats for more details
+If you are updating an existing application, you might need to add `:argon2_elixir`
+to your list of applications. In most cases, this will not be necessary.
 
 ## Use
 
@@ -56,6 +52,9 @@ functions in the Argon2 module.
 
 `verify_hash` takes a stored hash and a password and checks that the hash
 is correct.
+
+There is also a `no_user_verify` function which can be used to make user
+enumeration more difficult.
 
 Please read the documentation for the Argon2 module for more information.
 

@@ -1,4 +1,4 @@
-defmodule Argon2ReferenceTest do
+defmodule Argon2.ReferenceTest do
   use ExUnit.Case
 
   import Argon2TestHelper

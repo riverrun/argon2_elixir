@@ -1,4 +1,4 @@
-defmodule Argon2ErrorsTest do
+defmodule Argon2.ErrorsTest do
   use ExUnit.Case
 
   alias Argon2.Base

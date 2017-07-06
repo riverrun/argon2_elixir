@@ -35,13 +35,13 @@ defmodule Argon2 do
 
   ## Comparison with Bcrypt / Pbkdf2
 
-  Currently, the most popular password hashing functions are probably
-  Bcrypt, which was presented in 1999, and Pbkdf2 (pbkdf2_sha256 or
-  pbkdf2_sha512), which dates back to 2000. Both are strong password
-  hashing functions with no known vulnerabilities, and their algorithms
-  have been used and widely reviewed for over 10 years. To help you
-  decide whether you should use Argon2 instead, here is a brief comparison
-  of Bcrypt / Pbkdf2 with Argon2.
+  Currently, the most popular password hashing functions are Bcrypt,
+  which was presented in 1999, and Pbkdf2 (pbkdf2_sha256 or pbkdf2_sha512),
+  which dates back to 2000. Both are strong password hashing functions
+  with no known vulnerabilities, and their algorithms have been used and
+  widely reviewed for over 10 years. To help you decide whether you should
+  use Argon2 instead, here is a brief comparison of Bcrypt / Pbkdf2 with
+  Argon2.
 
   Argon2 is a lot newer, and this can be considered to be both an
   advantage and a disadvantage. On the one hand, Argon2 benefits
@@ -57,7 +57,7 @@ defmodule Argon2 do
   several hundred / thousand passwords in parallel. This can result in
   significant gains in the time it takes an attacker to crack passwords.
   Argon2's memory cost means that it is a lot more difficult for attackers
-  to benefit from using GPUs.
+  to benefit from using GPUs or other dedicated hardware.
 
   """
 
@@ -119,11 +119,28 @@ defmodule Argon2 do
 
   This function hashes the password and then returns false, and it is
   intended to make it more difficult for any potential attacker to find
-  valid usernames by using timing attacks. For more information, see the
-  section below on username obfuscation.
+  valid usernames by using timing attacks. This function is only useful
+  if it is used as part of a policy of hiding usernames. For more information,
+  see the section below on username obfuscation.
 
   It is important that this function is called with the same options
   that are used to hash the password.
+
+  ## Example
+
+  The following example looks for the user in the database and checks the
+  password with the stored password hash if the user is found. It then
+  returns the user struct, if the password is correct, or false. If no user
+  is found, the `no_user_verify` function is called. This will take the same
+  time to run as the `verify_hash` function. This means that the end user
+  will not be able to find valid usernames just by timing the responses.
+
+      def verify_password(username, password) do
+        case Repo.get_by(User, username: username) do
+          nil -> Argon2.no_user_verify()
+          user -> Argon2.verify_hash(user.password_hash, password) && user
+        end
+      end
 
   ## Username obfuscation
 

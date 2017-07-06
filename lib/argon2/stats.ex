@@ -42,7 +42,9 @@ defmodule Argon2.Stats do
   This function hashes the password and salt with Argon2.Base.hash_password/3
   and prints out statistics which can help you choose how to configure Argon2.
   """
-  def report(password, salt, opts \\ []) do
+  def report(opts \\ []) do
+    password = Keyword.get(opts, :password, "password")
+    salt = Keyword.get(opts, :salt, "somesaltSOMESALT")
     {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, [format: :report] ++ opts])
     {raw, encoded, {t, m, p, _, _, _, argon2_type}} = result
     Argon2.verify_hash(encoded, password, argon2_type: argon2_type)
