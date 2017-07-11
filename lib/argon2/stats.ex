@@ -59,7 +59,7 @@ defmodule Argon2.Stats do
     Parallelism:\t#{p}
     Hash:\t\t#{raw}
     Encoded:\t#{encoded}
-    #{format_time(exec_time)} seconds
+    Time taken:\t#{format_time(exec_time)} seconds
     Verification #{if check, do: "ok", else: "failed"}
     """
   end
