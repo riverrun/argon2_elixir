@@ -4,7 +4,7 @@ defmodule Argon2 do
 
   Before using Argon2, you will need to configure it. Read the documentation
   for Argon2.Stats for more information about configuration. After that,
-  most users will just need to use the `hash_pwd_salt/2` and `verify_hash/3`
+  most users will just need to use the `hash_pwd_salt/2` and `verify_pass/3`
   functions from this module.
 
   For a lower-level API, see Argon2.Base.
@@ -91,6 +91,32 @@ defmodule Argon2 do
   end
 
   @doc """
+  Check the password.
+
+  The check is performed in constant time to avoid timing attacks.
+
+  ## Options
+
+  There is one option:
+
+    * argon2_type - Argon2 type
+      * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
+      * the default is 1 (Argon2i)
+
+  """
+  def verify_pass(password, stored_hash, opts \\ [])
+  def verify_pass(password, stored_hash, opts) when is_binary(password) do
+    hash = :binary.bin_to_list(stored_hash)
+    case Base.verify_nif(hash, password, Keyword.get(opts, :argon2_type, 1)) do
+      0 -> true
+      _ -> false
+    end
+  end
+  def verify_pass(_, _, _) do
+    raise ArgumentError, "Wrong type - the password should be a string"
+  end
+
+  @doc """
   Verify an encoded Argon2 hash.
 
   ## Options
@@ -132,13 +158,13 @@ defmodule Argon2 do
   password with the stored password hash if the user is found. It then
   returns the user struct, if the password is correct, or false. If no user
   is found, the `no_user_verify` function is called. This will take the same
-  time to run as the `verify_hash` function. This means that the end user
+  time to run as the `verify_pass` function. This means that the end user
   will not be able to find valid usernames just by timing the responses.
 
       def verify_password(username, password) do
         case Repo.get_by(User, username: username) do
           nil -> Argon2.no_user_verify()
-          user -> Argon2.verify_hash(user.password_hash, password) && user
+          user -> Argon2.verify_pass(password, user.password_hash) && user
         end
       end
 

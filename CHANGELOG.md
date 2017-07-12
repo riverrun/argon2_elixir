@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1.0
+
+* Changes
+  * Added a `verify_pass` function - this is to be more in line with other libraries' verify functions
+
 ## v1.0.0
 
 * Changes

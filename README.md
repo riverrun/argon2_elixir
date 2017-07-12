@@ -45,12 +45,12 @@ to your list of applications. In most cases, this will not be necessary.
 
 ## Use
 
-Most users will just need to use the `hash_pwd_salt/2` and `verify_hash/3`
+Most users will just need to use the `hash_pwd_salt/2` and `verify_pass/3`
 functions in the Argon2 module.
 
 `hash_pwd_salt` generates a random salt and creates a hash from a password.
 
-`verify_hash` takes a stored hash and a password and checks that the hash
+`verify_pass` takes a password and a stored hash and checks that the password
 is correct.
 
 There is also a `no_user_verify` function which can be used to make user

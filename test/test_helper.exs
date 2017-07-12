@@ -25,9 +25,9 @@ defmodule Argon2TestHelper do
     wrong_list = wrong_passwords(password)
     for argon2_type <- 0..2 do
       encoded = Argon2.hash_pwd_salt(password, [t_cost: 3, m_cost: 12, argon2_type: argon2_type])
-      assert Argon2.verify_hash(encoded, password, [argon2_type: argon2_type])
+      assert Argon2.verify_pass(password, encoded, [argon2_type: argon2_type])
       for wrong <- wrong_list do
-        refute Argon2.verify_hash(encoded, wrong, [argon2_type: argon2_type])
+        refute Argon2.verify_pass(wrong, encoded, [argon2_type: argon2_type])
       end
     end
   end

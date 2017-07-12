@@ -9,7 +9,7 @@ defmodule Argon2.StatsTest do
     assert report =~ "Iterations:\t6\n"
     assert report =~ "Memory:\t\t64 MiB\n"
     assert report =~ "Parallelism:\t1\n"
-    assert report =~ "Verification ok"
+    assert report =~ "Verification OK"
   end
 
   test "use custom options" do
@@ -18,7 +18,7 @@ defmodule Argon2.StatsTest do
     assert report =~ "Iterations:\t8\n"
     assert report =~ "Memory:\t\t256 MiB\n"
     assert report =~ "Parallelism:\t4\n"
-    assert report =~ "Verification ok"
+    assert report =~ "Verification OK"
   end
 
 end

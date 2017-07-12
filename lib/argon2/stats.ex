@@ -47,7 +47,7 @@ defmodule Argon2.Stats do
     salt = Keyword.get(opts, :salt, "somesaltSOMESALT")
     {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, [format: :report] ++ opts])
     {raw, encoded, {t, m, p, _, _, _, argon2_type}} = result
-    Argon2.verify_hash(encoded, password, argon2_type: argon2_type)
+    Argon2.verify_pass(password, encoded, argon2_type: argon2_type)
     |> format_result(argon2_type, t, m, p, raw, encoded, exec_time)
   end
 
@@ -60,7 +60,7 @@ defmodule Argon2.Stats do
     Hash:\t\t#{raw}
     Encoded:\t#{encoded}
     Time taken:\t#{format_time(exec_time)} seconds
-    Verification #{if check, do: "ok", else: "failed"}
+    Verification #{if check, do: "OK", else: "FAILED"}
     """
   end
 
