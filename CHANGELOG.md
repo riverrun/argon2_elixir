@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.0
+
+* Changes
+  * Removed the `opts` argument to `verify_pass` - it is now `verify_pass/2`
+  * Deprecated `verify_hash` - this will be removed in version 2
+
 ## v1.1.0
 
 * Changes

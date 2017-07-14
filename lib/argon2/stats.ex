@@ -31,7 +31,6 @@ defmodule Argon2.Stats do
   Argon2i](https://download.libsodium.org/doc/password_hashing/the_argon2i_function.html)
   and [NIST recommendations](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf)
   (the NIST recommendations are currently being reviewed).
-
   """
 
   alias Argon2.Base
@@ -41,13 +40,23 @@ defmodule Argon2.Stats do
 
   This function hashes the password and salt with Argon2.Base.hash_password/3
   and prints out statistics which can help you choose how to configure Argon2.
+
+  ## Options
+
+  In addition to the options for Argon2.Base.hash_password/3, there are
+  also the following options:
+
+    * password - the password used
+      * the default is "password"
+    * salt - the salt used
+      * the default is "somesaltSOMESALT"
   """
   def report(opts \\ []) do
     password = Keyword.get(opts, :password, "password")
     salt = Keyword.get(opts, :salt, "somesaltSOMESALT")
     {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, [format: :report] ++ opts])
     {raw, encoded, {t, m, p, _, _, _, argon2_type}} = result
-    Argon2.verify_pass(password, encoded, argon2_type: argon2_type)
+    Argon2.verify_pass(password, encoded)
     |> format_result(argon2_type, t, m, p, raw, encoded, exec_time)
   end
 

@@ -23,7 +23,7 @@ defmodule Argon2.ErrorsTest do
       Base.hash_password("password", nil)
     end
     assert_raise ArgumentError, "Wrong type - the password should be a string", fn ->
-      Argon2.verify_pass(nil, '')
+      Argon2.verify_pass(nil, "")
     end
   end
 
