@@ -4,7 +4,11 @@ Argon2 password hashing for Elixir.
 
 [Argon2](https://github.com/P-H-C/phc-winner-argon2) is the official winner of the
 Password Hashing Competition, a several year project to identify a successor to
-bcrypt / PBKDF2 / scrypt password hashing methods.
+Bcrypt / Pbkdf2 / Scrypt password hashing methods.
+
+This library can be used on its own, or it can be used together
+with [Comeonin](https://hexdocs.pm/comeonin/api-reference.html),
+which provides a higher-level api.
 
 This has been tested on Linux and Mac OS X.
 It builds on Windows, but it has not been tested with dirty schedulers
@@ -34,7 +38,7 @@ This keeps the Erlang VM responsive.
 
     ```elixir
     def deps do
-      [{:argon2_elixir, "~> 1.0"}]
+      [{:argon2_elixir, "~> 1.2"}]
     end
     ```
 
@@ -60,4 +64,4 @@ Please read the documentation for the Argon2 module for more information.
 
 ### License
 
-Apache 2.0
+Apache 2.0. Please read the argon2/LICENSE file for more details about the Argon2 license.
