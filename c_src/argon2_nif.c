@@ -37,27 +37,28 @@
 ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ErlNifBinary pwd, salt;
-	unsigned int t_cost, m, m_cost, parallelism, raw_output, hashlen, encodedlen, version;
+	unsigned int t_cost, m, m_cost, parallelism, raw_output, hashlen, hashspace, encodedlen, version;
 	argon2_type type;
 	argon2_context context;
 	int result;
 	uint8_t *out;
 
-	if (argc != 10 || !enif_get_uint(env, argv[0], &t_cost) ||
+	if (argc != 11 || !enif_get_uint(env, argv[0], &t_cost) ||
 			!enif_get_uint(env, argv[1], &m) ||
 			!enif_get_uint(env, argv[2], &parallelism) ||
 			!enif_inspect_binary(env, argv[3], &pwd) ||
 			!enif_inspect_binary(env, argv[4], &salt) ||
 			!enif_get_uint(env, argv[5], &raw_output) ||
 			!enif_get_uint(env, argv[6], &hashlen) ||
-			!enif_get_uint(env, argv[7], &encodedlen) ||
-			!enif_get_uint(env, argv[8], &type) ||
-			!enif_get_uint(env, argv[9], &version))
+			!enif_get_uint(env, argv[7], &hashspace) ||
+			!enif_get_uint(env, argv[8], &encodedlen) ||
+			!enif_get_uint(env, argv[9], &type) ||
+			!enif_get_uint(env, argv[10], &version))
 		return enif_make_badarg(env);
 
 	m_cost = (1<<m);
 
-	char hash[hashlen * 2 + 1];
+	char hash[hashspace];
 	char encoded[encodedlen];
 
 	if (hashlen > ARGON2_MAX_OUTLEN) {
@@ -183,7 +184,7 @@ static int upgrade(ErlNifEnv* env, void** priv_data, void** old_priv_data, ERL_N
 
 static ErlNifFunc argon2_nif_funcs[] =
 {
-	{"hash_nif", 10, argon2_hash_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
+	{"hash_nif", 11, argon2_hash_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{"verify_nif", 3, argon2_verify_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{"error_nif", 1, argon2_error_nif},
 	{"encodedlen_nif", 6, argon2_encodedlen_nif}

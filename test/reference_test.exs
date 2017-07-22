@@ -53,7 +53,7 @@ defmodule Argon2.ReferenceTest do
   end
 
   test "common error states" do
-    ret = Base.hash_nif(1, 1, 1, "password", "diffsalt", 1, 32, 108, 1, 0x10)
+    ret = Base.hash_nif(1, 1, 1, "password", "diffsalt", 1, 32, 65, 108, 1, 0x10)
     assert ret == -14
   end
 
