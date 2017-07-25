@@ -18,8 +18,8 @@ defmodule Argon2.Base do
   @doc """
   Hash a password using Argon2.
   """
-  def hash_nif(t_cost, m_cost, parallelism, password, salt, raw, hashlen, hashspace, encodedlen, argon2_type, argon2_version)
-  def hash_nif(_, _, _, _, _, _, _, _, _, _, _), do: exit(:nif_library_not_loaded)
+  def hash_nif(t_cost, m_cost, parallelism, password, salt, raw, hashlen, encodedlen, argon2_type, argon2_version)
+  def hash_nif(_, _, _, _, _, _, _, _, _, _), do: exit(:nif_library_not_loaded)
 
   @doc """
   Verify a password using Argon2.
@@ -89,7 +89,7 @@ defmodule Argon2.Base do
     {t, m, p, raw_hash, encoded_hash, hashlen, argon2_type} = options = get_opts(opts)
     encodedlen = if encoded_hash,
       do: encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type), else: 0
-    hash_nif(t, m, p, password, salt, raw_hash, hashlen, hashlen * 2 + 1, encodedlen, argon2_type, 0)
+    hash_nif(t, m, p, password, salt, raw_hash, hashlen, encodedlen, argon2_type, 0)
     |> handle_result(options)
   end
   def hash_password(_, _, _) do
