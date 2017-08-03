@@ -57,9 +57,6 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 
 	m_cost = (1<<m);
 
-	char hash[hashlen * 2 + 1];
-	char encoded[encodedlen];
-
 	if (hashlen > ARGON2_MAX_OUTLEN) {
 		return enif_make_int(env, ARGON2_OUTPUT_TOO_LONG);
 	}
@@ -72,6 +69,9 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	if (!out) {
 		return enif_make_int(env, ARGON2_MEMORY_ALLOCATION_ERROR);
 	}
+
+	char *hash = malloc(hashlen * 2 + 1);
+	char *encoded = malloc(encodedlen);
 
 	context.out = (uint8_t *)out;
 	context.outlen = (uint32_t)hashlen;
@@ -97,6 +97,8 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	if (result != ARGON2_OK) {
 		clear_internal_memory(out, hashlen);
 		free(out);
+		free(hash);
+		free(encoded);
 		return enif_make_int(env, result);
 	}
 
@@ -116,6 +118,8 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 			clear_internal_memory(out, hashlen); /* wipe buffers if error */
 			clear_internal_memory(encoded, encodedlen);
 			free(out);
+			free(hash);
+			free(encoded);
 			return enif_make_int(env, ARGON2_ENCODING_FAIL);
 		}
 	} else {
@@ -124,8 +128,12 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	secure_wipe_memory(out, hashlen);
 	free(out);
 
-	return enif_make_tuple2(env, enif_make_string(env, hash, ERL_NIF_LATIN1),
+	ERL_NIF_TERM result_term = enif_make_tuple2(env, enif_make_string(env, hash, ERL_NIF_LATIN1),
 			enif_make_string(env, encoded, ERL_NIF_LATIN1));
+	
+	free(hash);
+	free(encoded);
+	return result_term;
 }
 
 static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
