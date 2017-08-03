@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.4
+
+* Enhancements
+  * Improved Windows support by removing VLAs from nif code
+
 ## v1.2.0
 
 * Changes

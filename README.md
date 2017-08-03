@@ -10,12 +10,6 @@ This library can be used on its own, or it can be used together
 with [Comeonin](https://hexdocs.pm/comeonin/api-reference.html),
 which provides a higher-level api.
 
-This has been tested on Linux and Mac OS X.
-It builds on Windows, but it has not been tested with dirty schedulers
-enabled yet.
-If you have any difficulties installing or using it on your platform,
-please open an issue.
-
 ## Requirements
 
 * Elixir version 1.4 or later
