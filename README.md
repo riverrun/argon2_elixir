@@ -28,18 +28,25 @@ This keeps the Erlang VM responsive.
 
 ## Installation
 
-  1. Add `argon2_elixir` to your list of dependencies in `mix.exs`:
+1. Add `argon2_elixir` to your list of dependencies in `mix.exs`:
 
-    ```elixir
-    def deps do
-      [{:argon2_elixir, "~> 1.2"}]
-    end
-    ```
+```elixir
+def deps do
+  [{:argon2_elixir, "~> 1.2"}]
+end
+```
 
-  2. Configure `argon2_elixir` - see the documentation for Argon2.Stats for more details
+2. Configure `argon2_elixir` - see the documentation for Argon2.Stats for more details
 
-If you are updating an existing application, you might need to add `:argon2_elixir`
-to your list of applications. In most cases, this will not be necessary.
+3. Optional: during tests (and tests only), you may want to reduce the number of rounds
+so it does not slow down your test suite. If you have a config/test.exs, you should
+add:
+
+```elixir
+config :argon2_elixir,
+  t_cost: 2,
+  m_cost: 12
+```
 
 ## Use
 
