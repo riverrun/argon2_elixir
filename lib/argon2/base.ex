@@ -11,8 +11,15 @@ defmodule Argon2.Base do
   @on_load {:init, 0}
 
   def init do
-    path = :filename.join(:code.priv_dir(:argon2_elixir), 'argon2_nif')
-    :erlang.load_nif(path, 0)
+    case load_nif() do
+      :ok -> :ok
+      _ -> raise """
+        You need to have Erlang 20 installed to use argon2_elixir.
+
+        If you cannot update to Erlang 20, try using bcrypt_elixir (version 0.12)
+        or pbkdf2_elixir.
+        """
+    end
   end
 
   @doc """
@@ -94,6 +101,11 @@ defmodule Argon2.Base do
   end
   def hash_password(_, _, _) do
     raise ArgumentError, "Wrong type - password and salt should be strings"
+  end
+
+  defp load_nif do
+    path = :filename.join(:code.priv_dir(:argon2_elixir), 'argon2_nif')
+    :erlang.load_nif(path, 0)
   end
 
   defp get_opts(opts) do
