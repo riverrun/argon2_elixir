@@ -95,15 +95,12 @@ defmodule Argon2 do
 
   The check is performed in constant time to avoid timing attacks.
   """
-  def verify_pass(password, stored_hash) when is_binary(password) do
+  def verify_pass(password, stored_hash) do
     hash = :binary.bin_to_list(stored_hash)
     case Base.verify_nif(hash, password, argon2_type(stored_hash)) do
       0 -> true
       _ -> false
     end
-  end
-  def verify_pass(_, _) do
-    raise ArgumentError, "Wrong type - the password should be a string"
   end
 
   @doc """
@@ -112,16 +109,13 @@ defmodule Argon2 do
   This function is deprecated. Please use `verify_pass` instead.
   """
   def verify_hash(stored_hash, password, opts \\ [])
-  def verify_hash(stored_hash, password, _) when is_binary(password) do
+  def verify_hash(stored_hash, password, _) do
     IO.puts :stderr, "Argon2.verify_hash is deprecated - please use Argon2.verify_pass instead"
     hash = :binary.bin_to_list(stored_hash)
     case Base.verify_nif(hash, password, argon2_type(stored_hash)) do
       0 -> true
       _ -> false
     end
-  end
-  def verify_hash(_, _, _) do
-    raise ArgumentError, "Wrong type - password should be a string"
   end
 
   @doc """

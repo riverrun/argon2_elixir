@@ -16,14 +16,11 @@ defmodule Argon2.ErrorsTest do
   end
 
   test "error when password or salt is nil" do
-    assert_raise ArgumentError, "Wrong type - password and salt should be strings", fn ->
+    assert_raise ArgumentError, fn ->
       Base.hash_password(nil, "somesalt")
     end
-    assert_raise ArgumentError, "Wrong type - password and salt should be strings", fn ->
+    assert_raise ArgumentError, fn ->
       Base.hash_password("password", nil)
-    end
-    assert_raise ArgumentError, "Wrong type - the password should be a string", fn ->
-      Argon2.verify_pass(nil, "")
     end
   end
 

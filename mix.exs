@@ -1,7 +1,7 @@
 defmodule Argon2.Mixfile do
   use Mix.Project
 
-  @version "1.2.5"
+  @version "1.2.6"
 
   @description """
   Argon2 password hashing algorithm for Elixir

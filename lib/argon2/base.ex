@@ -91,16 +91,12 @@ defmodule Argon2.Base do
       * the default is 1 (Argon2i)
 
   """
-  def hash_password(password, salt, opts \\ [])
-  def hash_password(password, salt, opts) when is_binary(password) and is_binary(salt) do
+  def hash_password(password, salt, opts \\ []) do
     {t, m, p, raw_hash, encoded_hash, hashlen, argon2_type} = options = get_opts(opts)
     encodedlen = if encoded_hash,
       do: encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type), else: 0
     hash_nif(t, m, p, password, salt, raw_hash, hashlen, encodedlen, argon2_type, 0)
     |> handle_result(options)
-  end
-  def hash_password(_, _, _) do
-    raise ArgumentError, "Wrong type - password and salt should be strings"
   end
 
   defp load_nif do
