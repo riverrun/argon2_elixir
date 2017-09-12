@@ -14,10 +14,11 @@ defmodule Argon2.Base do
     case load_nif() do
       :ok -> :ok
       _ -> raise """
-        You need to have Erlang 20 installed to use argon2_elixir.
-
-        If you cannot update to Erlang 20, try using bcrypt_elixir (version 0.12)
-        or pbkdf2_elixir.
+        An error occurred when loading Argon2.
+        Make sure you have a C compiler and Erlang 20 installed.
+        If you are not using Erlang 20, either upgrade to Erlang 20 or
+        use bcrypt_elixir (version 0.12) or pbkdf2_elixir.
+        See the Comeonin wiki for more information.
         """
     end
   end
