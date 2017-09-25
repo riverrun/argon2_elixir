@@ -61,4 +61,9 @@ defmodule Argon2Test do
     {long_time, _} = :timer.tc(Argon2, :no_user_verify, [[t_cost: 6, m_cost: 12]])
     assert long_time > short_time
   end
+
+  test "invalid stored_hash in verify_pass raises" do
+    assert_raise ArgumentError, ~r/check the 'stored_hash' input to verify_pass/,
+      fn -> Argon2.verify_pass("", "$someinvalidhash") end
+  end
 end

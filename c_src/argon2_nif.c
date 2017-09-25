@@ -130,7 +130,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 
 	ERL_NIF_TERM result_term = enif_make_tuple2(env, enif_make_string(env, hash, ERL_NIF_LATIN1),
 			enif_make_string(env, encoded, ERL_NIF_LATIN1));
-	
+
 	free(hash);
 	free(encoded);
 	return result_term;

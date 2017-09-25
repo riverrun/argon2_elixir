@@ -169,4 +169,8 @@ defmodule Argon2 do
   defp argon2_type("$argon2id" <> _), do: 2
   defp argon2_type("$argon2i" <> _), do: 1
   defp argon2_type("$argon2d" <> _), do: 0
+  defp argon2_type(_) do
+    raise ArgumentError, "Invalid Argon2 hash. " <>
+      "Please check the 'stored_hash' input to verify_pass."
+  end
 end
