@@ -62,12 +62,17 @@ defmodule Argon2.Base do
     * parallelism - number of parallel threads
       * 1 is the default
 
-  If you are hashing passwords in your tests, it can be useful to add
-  the following to the `config/test.exs` file:
+  ### Production values
+
+  See the documentation for Argon2.Stats.
+
+  ### Test values
+
+  The following values can be used to speed up tests.
 
       config :argon2_elixir,
-        t_cost: 2,
-        m_cost: 12
+        t_cost: 1,
+        m_cost: 8
 
   NB. do not use these values in production.
 

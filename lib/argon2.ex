@@ -30,8 +30,9 @@ defmodule Argon2 do
     * A **memory** cost, which defines the memory usage, given in kibibytes
     * A **parallelism** degree, which defines the number of parallel threads
 
-  More information is available at the [Argon2 reference C implementation
-  repository](https://github.com/P-H-C/phc-winner-argon2)
+  More information can be found in the documentation for the Argon2.Stats
+  module and at the [Argon2 reference C implementation
+  repository](https://github.com/P-H-C/phc-winner-argon2).
 
   ## Comparison with Bcrypt / Pbkdf2
 

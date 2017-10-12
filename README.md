@@ -44,8 +44,8 @@ add:
 
 ```elixir
 config :argon2_elixir,
-  t_cost: 2,
-  m_cost: 12
+  t_cost: 1,
+  m_cost: 8
 ```
 
 ## Use
@@ -61,7 +61,8 @@ is correct.
 There is also a `no_user_verify` function which can be used to make user
 enumeration more difficult.
 
-Please read the documentation for the Argon2 module for more information.
+For more information about configuring Argon2, see the documentation for
+the Argon2.Base.hash_password function and the Argon2.Stats module.
 
 ### License
 

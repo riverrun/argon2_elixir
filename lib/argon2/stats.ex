@@ -29,8 +29,8 @@ defmodule Argon2.Stats do
   to 5 seconds, as long as the user only has to log in once per session.
   These numbers are based on the [libsodium documentation for
   Argon2i](https://download.libsodium.org/doc/password_hashing/the_argon2i_function.html)
-  and [NIST recommendations](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf)
-  (the NIST recommendations are currently being reviewed).
+  and the previous
+  [NIST recommendations](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf).
   """
 
   alias Argon2.Base
@@ -50,6 +50,7 @@ defmodule Argon2.Stats do
       * the default is "password"
     * salt - the salt used
       * the default is "somesaltSOMESALT"
+
   """
   def report(opts \\ []) do
     password = Keyword.get(opts, :password, "password")
