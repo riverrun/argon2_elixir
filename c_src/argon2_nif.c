@@ -108,8 +108,6 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 
 		for (i = 0; i < hashlen; i++)
 			sprintf(hash + i * 2, "%02x", out[i]);
-	} else {
-		hash[0] = '\0';
 	}
 
 	/* if encoding requested, write it */
@@ -122,9 +120,8 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 			free(encoded);
 			return enif_make_int(env, ARGON2_ENCODING_FAIL);
 		}
-	} else {
-		encoded[0] = '\0';
 	}
+
 	clear_internal_memory(out, hashlen);
 	free(out);
 
