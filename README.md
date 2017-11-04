@@ -64,6 +64,10 @@ enumeration more difficult.
 For more information about configuring Argon2, see the documentation for
 the Argon2.Base.hash_password function and the Argon2.Stats module.
 
+## Deployment
+
+See the Comeonin [deployment guide](https://github.com/riverrun/comeonin/wiki/Deployment).
+
 ### License
 
 Apache 2.0. Please read the argon2/LICENSE file for more details about the Argon2 license.

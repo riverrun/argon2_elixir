@@ -59,7 +59,6 @@ defmodule Argon2 do
   significant gains in the time it takes an attacker to crack passwords.
   Argon2's memory cost means that it is a lot more difficult for attackers
   to benefit from using GPUs or other dedicated hardware.
-
   """
 
   alias Argon2.Base
