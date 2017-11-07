@@ -1,7 +1,7 @@
 defmodule Argon2.Mixfile do
   use Mix.Project
 
-  @version "1.2.10"
+  @version "1.2.11"
 
   @description """
   Argon2 password hashing algorithm for Elixir
@@ -12,7 +12,6 @@ defmodule Argon2.Mixfile do
       app: :argon2_elixir,
       version: @version,
       elixir: "~> 1.4",
-      build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       compilers: [:elixir_make] ++ Mix.compilers,
       description: @description,
@@ -24,15 +23,14 @@ defmodule Argon2.Mixfile do
 
   def application do
     [
-      applications: [:logger]
+      extra_applications: [:logger, :crypto]
     ]
   end
 
   defp deps do
     [
       {:elixir_make, "~> 0.4", runtime: false},
-      {:earmark, "~> 1.2", only: :dev},
-      {:ex_doc,  "~> 0.16", only: :dev}
+      {:ex_doc, "~> 0.18", only: :dev, runtime: false}
     ]
   end
 
