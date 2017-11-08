@@ -2,6 +2,10 @@ defmodule Argon2 do
   @moduledoc """
   Elixir wrapper for the Argon2 password hashing function.
 
+  This library can be used on its own, or it can be used together with
+  [Comeonin](https://hexdocs.pm/comeonin/api-reference.html), which
+  provides a higher-level api.
+
   Before using Argon2, you will need to configure it. Read the documentation
   for Argon2.Stats for more information about configuration. After that,
   most users will just need to use the `hash_pwd_salt/2` and `verify_pass/3`

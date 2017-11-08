@@ -64,6 +64,9 @@ enumeration more difficult.
 For more information about configuring Argon2, see the documentation for
 the Argon2.Base.hash_password function and the Argon2.Stats module.
 
+For further information about password hashing and using Argon2 with Comeonin,
+see the Comeonin [wiki](https://github.com/riverrun/comeonin/wiki).
+
 ## Deployment
 
 See the Comeonin [deployment guide](https://github.com/riverrun/comeonin/wiki/Deployment).
