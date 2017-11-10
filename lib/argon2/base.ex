@@ -98,11 +98,11 @@ defmodule Argon2.Base do
 
   """
   def hash_password(password, salt, opts \\ []) do
-    {t, m, p, raw_hash, encoded_hash, hashlen, argon2_type} = options = get_opts(opts)
-    encodedlen = if encoded_hash,
-      do: encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type), else: 0
-    hash_nif(t, m, p, password, salt, raw_hash, hashlen, encodedlen, argon2_type, 0)
-    |> handle_result(options)
+    {t, m, p, hashlen, argon2_type} = options = hash_opts(opts)
+    format = output_opts(opts[:format])
+    encodedlen = format == 1 and 0 || encodedlen_nif(t, m, p, byte_size(salt), hashlen, argon2_type)
+    hash_nif(t, m, p, password, salt, format, hashlen, encodedlen, argon2_type, 0)
+    |> handle_result(options, format)
   end
 
   defp load_nif do
@@ -110,28 +110,25 @@ defmodule Argon2.Base do
     :erlang.load_nif(path, 0)
   end
 
-  defp get_opts(opts) do
-    {raw_hash, encoded_hash} = case opts[:format] do
-                                 :raw_hash -> {1, false}
-                                 :report -> {1, true}
-                                 _ -> {0, true}
-                               end
+  defp hash_opts(opts) do
     {Keyword.get(opts, :t_cost, Application.get_env(:argon2_elixir, :t_cost, 6)),
      Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 16)),
      Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 1)),
-     raw_hash,
-     encoded_hash,
      Keyword.get(opts, :hashlen, 32),
      Keyword.get(opts, :argon2_type, 1)}
   end
 
-  defp handle_result(result, _) when is_integer(result) do
+  defp output_opts(:raw_hash), do: 1
+  defp output_opts(:report), do: 2
+  defp output_opts(_), do: 0
+
+  defp handle_result(result, _, _) when is_integer(result) do
     msg = error_nif(result) |> :binary.list_to_bin
     raise ArgumentError, msg
   end
-  defp handle_result({[], encoded}, _), do: :binary.list_to_bin(encoded)
-  defp handle_result({raw, []}, _), do: :binary.list_to_bin(raw)
-  defp handle_result({raw, encoded}, options) do
+  defp handle_result({_, encoded}, _, 0), do: :binary.list_to_bin(encoded)
+  defp handle_result({raw, _}, _, 1), do: :binary.list_to_bin(raw)
+  defp handle_result({raw, encoded}, options, 2) do
     {:binary.list_to_bin(raw), :binary.list_to_bin(encoded), options}
   end
 end
