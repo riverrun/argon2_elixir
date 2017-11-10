@@ -38,7 +38,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 {
 	ErlNifBinary pwd, salt;
 	ERL_NIF_TERM result_term;
-	unsigned int t_cost, m, m_cost, parallelism, raw_output, hashlen, encodedlen, version;
+	unsigned int t_cost, m, m_cost, parallelism, raw_output, hashlen, encodedlen, type_int, version;
 	argon2_type type;
 	argon2_context context;
 	int result;
@@ -54,11 +54,12 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 			!enif_get_uint(env, argv[5], &raw_output) ||
 			!enif_get_uint(env, argv[6], &hashlen) ||
 			!enif_get_uint(env, argv[7], &encodedlen) ||
-			!enif_get_uint(env, argv[8], &type) ||
+			!enif_get_uint(env, argv[8], &type_int) ||
 			!enif_get_uint(env, argv[9], &version))
 		return enif_make_badarg(env);
 
 	m_cost = (1<<m);
+	type = (argon2_type)type_int;
 
 	if (hashlen > ARGON2_MAX_OUTLEN) {
 		return enif_make_int(env, ARGON2_OUTPUT_TOO_LONG);
@@ -140,13 +141,16 @@ static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv* env, int argc, const ERL_NIF_TE
 {
 	char encoded[MAX_ENCODEDLEN];
 	ErlNifBinary pwd;
+	unsigned int type_int;
 	argon2_type type;
 	int ret;
 
 	if (argc != 3 || !enif_get_string(env, argv[0], encoded, sizeof(encoded), ERL_NIF_LATIN1) ||
 			!enif_inspect_binary(env, argv[1], &pwd) ||
-			!enif_get_uint(env, argv[2], &type))
+			!enif_get_uint(env, argv[2], &type_int))
 		return enif_make_badarg(env);
+
+	type = (argon2_type)type_int;
 
 	ret = argon2_verify(encoded, pwd.data, pwd.size, type);
 	return enif_make_int(env, ret);
@@ -166,7 +170,7 @@ static ERL_NIF_TERM argon2_error_nif(ErlNifEnv* env, int argc, const ERL_NIF_TER
 
 static ERL_NIF_TERM argon2_encodedlen_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-	unsigned int t_cost, m, m_cost, parallelism, saltlen, hashlen;
+	unsigned int t_cost, m, m_cost, parallelism, saltlen, hashlen, type_int;
 	argon2_type type;
 	int ret;
 
@@ -175,10 +179,11 @@ static ERL_NIF_TERM argon2_encodedlen_nif(ErlNifEnv* env, int argc, const ERL_NI
 			!enif_get_uint(env, argv[2], &parallelism) ||
 			!enif_get_uint(env, argv[3], &saltlen) ||
 			!enif_get_uint(env, argv[4], &hashlen) ||
-			!enif_get_uint(env, argv[5], &type))
+			!enif_get_uint(env, argv[5], &type_int))
 		return enif_make_badarg(env);
 
 	m_cost = (1<<m);
+	type = (argon2_type)type_int;
 
 	ret = argon2_encodedlen(t_cost, m_cost, parallelism, saltlen, hashlen, type);
 	return enif_make_int(env, ret);
