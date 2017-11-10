@@ -37,12 +37,13 @@
 ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ErlNifBinary pwd, salt;
+	ERL_NIF_TERM result_term;
 	unsigned int t_cost, m, m_cost, parallelism, raw_output, hashlen, encodedlen, version;
 	argon2_type type;
 	argon2_context context;
 	int result;
 	uint8_t *out;
-	void *hash;
+	char *hash;
 	char *encoded;
 
 	if (argc != 10 || !enif_get_uint(env, argv[0], &t_cost) ||
@@ -127,7 +128,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	clear_internal_memory(out, hashlen);
 	free(out);
 
-	ERL_NIF_TERM result_term = enif_make_tuple2(env, enif_make_string(env, hash, ERL_NIF_LATIN1),
+	result_term = enif_make_tuple2(env, enif_make_string(env, hash, ERL_NIF_LATIN1),
 			enif_make_string(env, encoded, ERL_NIF_LATIN1));
 
 	free(hash);

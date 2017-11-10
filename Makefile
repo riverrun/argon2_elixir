@@ -28,31 +28,22 @@ SRC_INC = argon2/include
 SRC_DIR = argon2/src
 
 SRC = $(SRC_DIR)/argon2.c $(SRC_DIR)/core.c $(SRC_DIR)/blake2/blake2b.c\
-      $(SRC_DIR)/thread.c $(SRC_DIR)/encoding.c c_src/argon2_nif.c
+      $(SRC_DIR)/thread.c $(SRC_DIR)/encoding.c $(SRC_DIR)/ref.c\
+      c_src/argon2_nif.c
 
 ERLANG_PATH = $(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
-CFLAGS += -std=c89 -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I$(ERLANG_PATH)
-
-OPTTARGET ?= native
-OPTTEST := $(shell $(CC) -I$(SRC_INC) -I$(SRC_DIR) -march=$(OPTTARGET) $(SRC_DIR)/opt.c -c\
-	-o /dev/null 2>/dev/null; echo $$?)
-
-ifneq ($(OPTTEST), 0)
-	SRC += $(SRC_DIR)/ref.c
-else
-	CFLAGS += -march=$(OPTTARGET)
-	SRC += $(SRC_DIR)/opt.c
-endif
+CFLAGS += -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I$(ERLANG_PATH)
+#CFLAGS += -std=c89 -pedantic -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I$(ERLANG_PATH)
 
 KERNEL_NAME := $(shell uname -s)
 
 LIB_NAME = priv/argon2_nif.so
 ifneq ($(CROSSCOMPILE),)
-	LIB_CFLAGS := -shared -fPIC -fvisibility=hidden -DA2_VISCTL=1
+	LIB_CFLAGS := -shared -fPIC -fvisibility=hidden
 	SO_LDFLAGS := -Wl,-soname,libargon2.so.0
 else
 	ifeq ($(KERNEL_NAME), Linux)
-		LIB_CFLAGS := -shared -fPIC -fvisibility=hidden -DA2_VISCTL=1
+		LIB_CFLAGS := -shared -fPIC -fvisibility=hidden
 		SO_LDFLAGS := -Wl,-soname,libargon2.so.0
 	endif
 	ifeq ($(KERNEL_NAME), Darwin)
