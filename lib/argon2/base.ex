@@ -81,18 +81,18 @@ defmodule Argon2.Base do
   There are six options (t_cost, m_cost and parallelism can be used
   to override the values set in the config):
 
-    * t_cost - time cost
-    * m_cost - memory usage
-    * parallelism - number of parallel threads
-    * format - output format
+    * `:t_cost` - time cost
+    * `:m_cost` - memory usage
+    * `:parallelism` - number of parallel threads
+    * `:format` - output format
       * this value can be
-        * :encoded - encoded with Argon2 crypt format
-        * :raw_hash - raw hash output in hexadecimal format
-        * :report - raw hash and encoded hash, together with the options used
-      * :encoded is the default
-    * hashlen - length of the hash (in bytes)
+        * `:encoded` - encoded with Argon2 crypt format
+        * `:raw_hash` - raw hash output in hexadecimal format
+        * `:report` - raw hash and encoded hash, together with the options used
+      * `:encoded` is the default
+    * `:hashlen` - length of the hash (in bytes)
       * the default is 32
-    * argon2_type - Argon2 type
+    * `:argon2_type` - Argon2 type
       * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
       * the default is 1 (Argon2i)
 

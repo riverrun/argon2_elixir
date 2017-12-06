@@ -85,7 +85,7 @@ defmodule Argon2 do
 
   This function has the following additional option:
 
-    * salt_len - the length of the random salt
+    * `:salt_len` - the length of the random salt
       * the default is 16 (the minimum is 8) bytes
       * we do not recommend using a salt less than 16 bytes long
 

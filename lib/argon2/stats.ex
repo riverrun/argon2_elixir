@@ -46,9 +46,9 @@ defmodule Argon2.Stats do
   In addition to the options for Argon2.Base.hash_password/3, there are
   also the following options:
 
-    * password - the password used
+    * `:password` - the password used
       * the default is "password"
-    * salt - the salt used
+    * `:salt` - the salt used
       * the default is "somesaltSOMESALT"
 
   """
