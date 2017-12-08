@@ -63,7 +63,8 @@ defmodule Argon2Test do
   end
 
   test "invalid stored_hash in verify_pass raises" do
-    assert_raise ArgumentError, ~r/check the 'stored_hash' input to verify_pass/,
-      fn -> Argon2.verify_pass("", "$someinvalidhash") end
+    assert_raise ArgumentError, ~r/check the 'stored_hash' input to verify_pass/, fn ->
+      Argon2.verify_pass("", "$someinvalidhash")
+    end
   end
 end

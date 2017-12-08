@@ -101,6 +101,7 @@ defmodule Argon2 do
   """
   def verify_pass(password, stored_hash) do
     hash = :binary.bin_to_list(stored_hash)
+
     case Base.verify_nif(hash, password, argon2_type(stored_hash)) do
       0 -> true
       _ -> false
@@ -113,9 +114,11 @@ defmodule Argon2 do
   This function is deprecated. Please use `verify_pass` instead.
   """
   def verify_hash(stored_hash, password, opts \\ [])
+
   def verify_hash(stored_hash, password, _) do
-    IO.puts :stderr, "Argon2.verify_hash is deprecated - please use Argon2.verify_pass instead"
+    IO.puts(:stderr, "Argon2.verify_hash is deprecated - please use Argon2.verify_pass instead")
     hash = :binary.bin_to_list(stored_hash)
+
     case Base.verify_nif(hash, password, argon2_type(stored_hash)) do
       0 -> true
       _ -> false
@@ -173,8 +176,9 @@ defmodule Argon2 do
   defp argon2_type("$argon2id" <> _), do: 2
   defp argon2_type("$argon2i" <> _), do: 1
   defp argon2_type("$argon2d" <> _), do: 0
+
   defp argon2_type(_) do
-    raise ArgumentError, "Invalid Argon2 hash. " <>
-      "Please check the 'stored_hash' input to verify_pass."
+    raise ArgumentError,
+          "Invalid Argon2 hash. " <> "Please check the 'stored_hash' input to verify_pass."
   end
 end

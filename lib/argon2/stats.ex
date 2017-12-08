@@ -55,14 +55,18 @@ defmodule Argon2.Stats do
   def report(opts \\ []) do
     password = Keyword.get(opts, :password, "password")
     salt = Keyword.get(opts, :salt, "somesaltSOMESALT")
-    {exec_time, result} = :timer.tc(Base, :hash_password, [password, salt, [format: :report] ++ opts])
+
+    {exec_time, result} =
+      :timer.tc(Base, :hash_password, [password, salt, [format: :report] ++ opts])
+
     {raw, encoded, {t, m, p, _, argon2_type}} = result
+
     Argon2.verify_pass(password, encoded)
     |> format_result(argon2_type, t, m, p, raw, encoded, exec_time)
   end
 
   defp format_result(check, argon2_type, t, m, p, raw, encoded, exec_time) do
-    IO.puts """
+    IO.puts("""
     Type:\t\t#{format_type(argon2_type)}
     Iterations:\t#{t}
     Memory:\t\t#{trunc(:math.pow(2, m - 10))} MiB
@@ -71,7 +75,7 @@ defmodule Argon2.Stats do
     Encoded:\t#{encoded}
     Time taken:\t#{format_time(exec_time)} seconds
     Verification #{if check, do: "OK", else: "FAILED"}
-    """
+    """)
   end
 
   defp format_type(0), do: "Argon2d"

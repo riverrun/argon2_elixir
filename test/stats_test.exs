@@ -20,5 +20,4 @@ defmodule Argon2.StatsTest do
     assert report =~ "Parallelism:\t4\n"
     assert report =~ "Verification OK"
   end
-
 end

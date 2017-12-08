@@ -19,6 +19,7 @@ defmodule Argon2.ErrorsTest do
     assert_raise ArgumentError, fn ->
       Base.hash_password(nil, "somesalt")
     end
+
     assert_raise ArgumentError, fn ->
       Base.hash_password("password", nil)
     end
@@ -30,5 +31,4 @@ defmodule Argon2.ErrorsTest do
     assert Base.error_nif(-26) == 'There is no such version of Argon2'
     assert Base.error_nif(-36) == 'Unknown error code'
   end
-
 end
