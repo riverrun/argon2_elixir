@@ -76,6 +76,9 @@ defmodule Argon2.Base do
       * 16 is the default - this will produce a memory usage of 2 ^ 16 KiB (64 MiB)
     * parallelism - number of parallel threads
       * 1 is the default
+    * argon2_type - argon2 variant to use
+      * 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
+      * 1 is the default (Argon2i)
 
   ### Production values
 
@@ -93,7 +96,7 @@ defmodule Argon2.Base do
 
   ## Options
 
-  There are six options (t_cost, m_cost and parallelism can be used
+  There are six options (t_cost, m_cost, parallelism and argon2_type can be used
   to override the values set in the config):
 
     * `:t_cost` - time cost
@@ -134,7 +137,7 @@ defmodule Argon2.Base do
       Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 16)),
       Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 1)),
       Keyword.get(opts, :hashlen, 32),
-      Keyword.get(opts, :argon2_type, 1)
+      Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 1))
     }
   end
 
