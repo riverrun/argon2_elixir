@@ -27,10 +27,12 @@ defmodule Argon2Test do
   test "customizing parameters with config" do
     Application.put_env(:argon2_elixir, :t_cost, 3)
     Application.put_env(:argon2_elixir, :m_cost, 12)
+    Application.put_env(:argon2_elixir, :argon2_type, 2)
     result = Base.hash_password("password", "somesalt")
-    assert String.starts_with?(result, "$argon2i$v=19$m=4096,t=3,p=1")
+    assert String.starts_with?(result, "$argon2id$v=19$m=4096,t=3,p=1")
     Application.delete_env(:argon2_elixir, :t_cost)
     Application.delete_env(:argon2_elixir, :m_cost)
+    Application.delete_env(:argon2_elixir, :argon2_type)
   end
 
   test "hashing and checking passwords" do
