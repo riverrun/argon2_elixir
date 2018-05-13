@@ -114,6 +114,17 @@ defmodule Argon2.Base do
       * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
       * the default is 1 (Argon2i)
 
+  ## Examples
+
+  The following example changes the default `t_cost` and `m_cost`:
+
+      Argon2.Base.hash_password("password", "somesaltSOMESALT", [t_cost: 8, m_cost: 20])
+
+  In the example below, the Argon2 type is changed to Argon2id:
+
+      Argon2.Base.hash_password("password", "somesaltSOMESALT", [argon2_type: 2])
+
+  To use Argon2d, use `argon2_type: 0`.
   """
   def hash_password(password, salt, opts \\ []) do
     {t, m, p, hashlen, argon2_type} = options = hash_opts(opts)

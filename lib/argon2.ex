@@ -89,6 +89,17 @@ defmodule Argon2 do
       * the default is 16 (the minimum is 8) bytes
       * we do not recommend using a salt less than 16 bytes long
 
+  ## Examples
+
+  The following example changes the default `t_cost` and `m_cost`:
+
+      Argon2.hash_pwd_salt("password", [t_cost: 8, m_cost: 20])
+
+  In the example below, the Argon2 type is changed to Argon2id:
+
+      Argon2.hash_pwd_salt("password", [argon2_type: 2])
+
+  To use Argon2d, use `argon2_type: 0`.
   """
   def hash_pwd_salt(password, opts \\ []) do
     Base.hash_password(password, Keyword.get(opts, :salt_len, 16) |> gen_salt, opts)
@@ -111,7 +122,8 @@ defmodule Argon2 do
   @doc """
   Verify an encoded Argon2 hash.
 
-  This function is deprecated. Please use `verify_pass` instead.
+  This function is deprecated, and it will be removed in version 2.0.
+  Please use `verify_pass` instead.
   """
   def verify_hash(stored_hash, password, opts \\ [])
 
