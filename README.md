@@ -32,7 +32,7 @@ This keeps the Erlang VM responsive.
 
 ```elixir
 def deps do
-  [{:argon2_elixir, "~> 1.2"}]
+  [{:argon2_elixir, "~> 1.3"}]
 end
 ```
 
@@ -43,9 +43,7 @@ so it does not slow down your test suite. If you have a config/test.exs, you sho
 add:
 
 ```elixir
-config :argon2_elixir,
-  t_cost: 1,
-  m_cost: 8
+config :argon2_elixir, t_cost: 1, m_cost: 8
 ```
 
 ## Use

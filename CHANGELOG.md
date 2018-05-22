@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3
+
+* Bug fixes
+  * Fixed bug that was raising errors when used in releases
+
 ## v1.2.4
 
 * Enhancements
