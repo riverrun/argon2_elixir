@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.1
+
+* Bug fixes
+  * Added :erlang.nif_error for use with NIFs
+
 ## v1.3
 
 * Bug fixes
