@@ -34,7 +34,7 @@
 
 #define MAX_ENCODEDLEN 1024
 
-ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
 	ErlNifBinary pwd, salt;
 	ERL_NIF_TERM result_term;
@@ -57,7 +57,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 			!enif_get_uint(env, argv[9], &version))
 		return enif_make_badarg(env);
 
-	m_cost = (1<<m);
+	m_cost = 1U << m;
 	type = (argon2_type)type_int;
 
 	if (hashlen > ARGON2_MAX_OUTLEN) {
@@ -69,13 +69,21 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	}
 
 	out = malloc(hashlen);
-	hash = malloc(hashlen * 2 + 1);
-	encoded = malloc(encodedlen);
-	if (!out || !hash || !encoded) {
+	if (!out) {
 		return enif_make_int(env, ARGON2_MEMORY_ALLOCATION_ERROR);
 	}
 
-	context.out = (uint8_t *)out;
+	hash = malloc(hashlen * 2 + 1);
+	if (!hash) {
+		return enif_make_int(env, ARGON2_MEMORY_ALLOCATION_ERROR);
+	}
+
+	encoded = malloc(encodedlen + 1);
+	if (!encoded) {
+		return enif_make_int(env, ARGON2_MEMORY_ALLOCATION_ERROR);
+	}
+
+	context.out = out;
 	context.outlen = (uint32_t)hashlen;
 	context.pwd = CONST_CAST(uint8_t *)pwd.data;
 	context.pwdlen = (uint32_t)pwd.size;
@@ -106,7 +114,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 
 	/* if raw hash requested, write it */
 	if (raw_output) {
-		size_t i;
+		int i;
 
 		for (i = 0; i < hashlen; i++)
 			sprintf(hash + i * 2, "%02x", out[i]);
@@ -135,7 +143,7 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 	return result_term;
 }
 
-static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
 	char encoded[MAX_ENCODEDLEN];
 	ErlNifBinary pwd;
@@ -154,7 +162,7 @@ static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv* env, int argc, const ERL_NIF_TE
 	return enif_make_int(env, ret);
 }
 
-static ERL_NIF_TERM argon2_error_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM argon2_error_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
 	int error_code;
 	char const *ret;
@@ -166,7 +174,7 @@ static ERL_NIF_TERM argon2_error_nif(ErlNifEnv* env, int argc, const ERL_NIF_TER
 	return enif_make_string(env, ret, ERL_NIF_LATIN1);
 }
 
-static ERL_NIF_TERM argon2_encodedlen_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM argon2_encodedlen_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
 	unsigned int t_cost, m, m_cost, parallelism, saltlen, hashlen, type_int;
 	argon2_type type;
@@ -180,14 +188,14 @@ static ERL_NIF_TERM argon2_encodedlen_nif(ErlNifEnv* env, int argc, const ERL_NI
 			!enif_get_uint(env, argv[5], &type_int))
 		return enif_make_badarg(env);
 
-	m_cost = (1<<m);
+	m_cost = 1U << m;
 	type = (argon2_type)type_int;
 
 	ret = argon2_encodedlen(t_cost, m_cost, parallelism, saltlen, hashlen, type);
 	return enif_make_int(env, ret);
 }
 
-static int upgrade(ErlNifEnv* env, void** priv_data, void** old_priv_data, ERL_NIF_TERM load_info)
+static int upgrade(ErlNifEnv *env, void **priv_data, void **old_priv_data, ERL_NIF_TERM load_info)
 {
 	return 0;
 }
