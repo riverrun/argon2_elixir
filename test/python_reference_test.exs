@@ -3,13 +3,15 @@ defmodule Argon2.PythonReferenceTest do
 
   @pass_hashes [
     {"password", "$argon2i$v=19$m=65536,t=6,p=1$ZSFmimH0uZkOIPTgZX2QWA$c98Jib7O89BBOnO4YNAkdA"},
-    {"aáåäeéêëoôö", "$argon2i$v=19$m=65536,t=6,p=1$C9R4/3fqN2FNW01MHRXtaw$cLD87IO9DNW1EI/sJka4TA"},
+    {"aáåäeéêëoôö",
+     "$argon2i$v=19$m=65536,t=6,p=1$C9R4/3fqN2FNW01MHRXtaw$cLD87IO9DNW1EI/sJka4TA"},
     {
       "Сколько лет, сколько зим",
       "$argon2i$v=19$m=65536,t=6,p=1$mE78Um6wBWYojv/yEsGIoA$itfghPO2IC5A4THXfI5Ciw"
     },
     {"สวัสดีครับ", "$argon2i$v=19$m=65536,t=6,p=1$ZoxhWxwAz+xG7abtOtFtOQ$p2sFiyFclHC2C9de9OJrBA"},
-    {"Я❤três☕ où☔", "$argon2i$v=19$m=65536,t=6,p=1$KdBA655nrjQCsee0+8zj8w$SrV0KG+G0M4JIhaY3pRitw"},
+    {"Я❤três☕ où☔",
+     "$argon2i$v=19$m=65536,t=6,p=1$KdBA655nrjQCsee0+8zj8w$SrV0KG+G0M4JIhaY3pRitw"},
     {
       "C'est bon, la vie!",
       "$argon2i$v=19$m=65536,t=6,p=1$0FN5kRHxa4GSmJNJX3KREw$DvY1LkV+VxSZMByQZqHuVA"
