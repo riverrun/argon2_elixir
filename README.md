@@ -43,7 +43,7 @@ so it does not slow down your test suite. If you have a config/test.exs, you sho
 add:
 
 ```elixir
-config :argon2_elixir, t_cost: 1, m_cost: 8
+config :argon2_elixir, t_cost: 2, m_cost: 8
 ```
 
 ## Use
@@ -65,9 +65,26 @@ the Argon2.Base.hash_password function and the Argon2.Stats module.
 For further information about password hashing and using Argon2 with Comeonin,
 see the Comeonin [wiki](https://github.com/riverrun/comeonin/wiki).
 
-## Deployment
+### Deployment
 
 See the Comeonin [deployment guide](https://github.com/riverrun/comeonin/wiki/Deployment).
+
+## Contributing
+
+There are many ways you can contribute to the development of this library, including:
+
+* reporting issues
+* improving documentation
+* sharing your experiences with others
+* [making a financial contribution](#donations)
+
+## Donations
+
+You can support the ongoing maintenance of this project by
+[making donations through Patreon](https://www.patreon.com/riverrun).
+
+Patreon, by default, will bill you on a monthly basis. If you prefer to make a one-off payment,
+see [this guide](https://support.patreon.com/hc/en-us/articles/204606215-Can-I-make-a-one-time-payment-).
 
 ### License
 
