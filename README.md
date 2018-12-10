@@ -1,5 +1,8 @@
 # Argon2
 
+[![Patreon](https://img.shields.io/badge/patreon-donate-brightgreen.svg)](https://www.patreon.com/riverrun)
+[![Hex.pm Version](http://img.shields.io/hexpm/v/argon2_elixir.svg)](https://hex.pm/packages/argon2_elixir)
+
 Argon2 password hashing for Elixir.
 
 [Argon2](https://github.com/P-H-C/phc-winner-argon2) is the official winner of the
