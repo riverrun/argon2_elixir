@@ -65,6 +65,8 @@ defmodule Argon2 do
   to benefit from using GPUs or other dedicated hardware.
   """
 
+  use Comeonin
+
   alias Argon2.Base
 
   @doc """
@@ -101,15 +103,12 @@ defmodule Argon2 do
 
   To use Argon2d, use `argon2_type: 0`.
   """
+  @impl true
   def hash_pwd_salt(password, opts \\ []) do
     Base.hash_password(password, Keyword.get(opts, :salt_len, 16) |> gen_salt, opts)
   end
 
-  @doc """
-  Check the password.
-
-  The check is performed in constant time to avoid timing attacks.
-  """
+  @impl true
   def verify_pass(password, stored_hash) do
     hash = :binary.bin_to_list(stored_hash)
 
@@ -119,71 +118,14 @@ defmodule Argon2 do
     end
   end
 
-  @doc """
-  Verify an encoded Argon2 hash.
-
-  This function is deprecated, and it will be removed in version 2.0.
-  Please use `verify_pass` instead.
-  """
-  def verify_hash(stored_hash, password, opts \\ [])
-
-  def verify_hash(stored_hash, password, _) do
-    IO.puts(:stderr, "Argon2.verify_hash is deprecated - please use Argon2.verify_pass instead")
-    hash = :binary.bin_to_list(stored_hash)
-
-    case Base.verify_nif(hash, password, argon2_type(stored_hash)) do
-      0 -> true
-      _ -> false
-    end
-  end
-
-  @doc """
-  A dummy verify function to help prevent user enumeration.
-
-  This function hashes the password and then returns false, and it is
-  intended to make it more difficult for any potential attacker to find
-  valid usernames by using timing attacks. This function is only useful
-  if it is used as part of a policy of hiding usernames. For more information,
-  see the section below on username obfuscation.
-
-  It is important that this function is called with the same options
-  that are used to hash the password.
-
-  ## Example
-
-  The following example looks for the user in the database and checks the
-  password with the stored password hash if the user is found. It then
-  returns the user struct, if the password is correct, or false. If no user
-  is found, the `no_user_verify` function is called. This will take the same
-  time to run as the `verify_pass` function. This means that the end user
-  will not be able to find valid usernames just by timing the responses.
-
-      def verify_password(username, password) do
-        case Repo.get_by(User, username: username) do
-          nil -> Argon2.no_user_verify()
-          user -> Argon2.verify_pass(password, user.password_hash) && user
-        end
-      end
-
-  ## Username obfuscation
-
-  In addition to keeping passwords secret, hiding the precise username
-  can help make online attacks more difficult. An attacker would then
-  have to guess a username / password combination, rather than just
-  a password, to gain access.
-
-  This does not mean that the username should be kept completely secret.
-  Adding a short numerical suffix to a user's name, for example, would be
-  sufficient to increase the attacker's work considerably.
-
-  If you are implementing a policy of hiding usernames, it is important
-  to make sure that the username is not revealed by any other part of
-  your application.
-  """
+  @impl true
   def no_user_verify(opts \\ []) do
     hash_pwd_salt("", opts)
     false
   end
+
+  @impl true
+  def report(opts \\ []), do: Argon2.Stats.report(opts)
 
   defp argon2_type("$argon2id" <> _), do: 2
   defp argon2_type("$argon2i" <> _), do: 1

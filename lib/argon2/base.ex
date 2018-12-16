@@ -78,7 +78,7 @@ defmodule Argon2.Base do
       * 1 is the default
     * argon2_type - argon2 variant to use
       * 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
-      * 1 is the default (Argon2i)
+      * 2 is the default (Argon2id)
 
   ### Production values
 
@@ -112,7 +112,7 @@ defmodule Argon2.Base do
       * the default is 32
     * `:argon2_type` - Argon2 type
       * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
-      * the default is 1 (Argon2i)
+      * the default is 2 (Argon2id)
 
   ## Examples
 
@@ -148,7 +148,7 @@ defmodule Argon2.Base do
       Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 16)),
       Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 1)),
       Keyword.get(opts, :hashlen, 32),
-      Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 1))
+      Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 2))
     }
   end
 

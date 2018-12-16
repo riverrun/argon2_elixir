@@ -7,7 +7,7 @@ defmodule Argon2Test do
   test "only output encoded hash" do
     result = Base.hash_password("password", "somesalt")
     assert is_binary(result)
-    assert String.starts_with?(result, "$argon2i$v=19$m=65536,t=6,p=1")
+    assert String.starts_with?(result, "$argon2id$v=19$m=65536,t=6,p=1")
   end
 
   test "only output raw hash" do
@@ -21,7 +21,7 @@ defmodule Argon2Test do
     assert is_binary(raw)
     assert is_binary(encoded)
     refute String.starts_with?(raw, "$argon2")
-    assert String.starts_with?(encoded, "$argon2i$v=19$m=65536,t=6,p=1")
+    assert String.starts_with?(encoded, "$argon2id$v=19$m=65536,t=6,p=1")
   end
 
   test "customizing parameters with config" do
@@ -68,5 +68,38 @@ defmodule Argon2Test do
     assert_raise ArgumentError, ~r/check the 'stored_hash' input to verify_pass/, fn ->
       Argon2.verify_pass("", "$someinvalidhash")
     end
+  end
+
+  test "add_hash with default arguments" do
+    assert %{password_hash: hash, password: nil} = Argon2.add_hash("password")
+    assert Argon2.verify_pass("password", hash)
+  end
+
+  test "add_hash with custom hash_key" do
+    assert %{encrypted_password: hash, password: nil} = Argon2.add_hash("password", hash_key: :encrypted_password)
+    assert Argon2.verify_pass("password", hash)
+  end
+
+  test "check_pass with default arguments" do
+    user = %{password_hash: Argon2.hash_pwd_salt("password")}
+    assert {:ok, user_1} = Argon2.check_pass(user, "password")
+    assert user_1 == user
+    assert {:error, message} = Argon2.check_pass(nil, "password")
+    assert message =~ "invalid user-identifier"
+    user = %{password_hash: Argon2.hash_pwd_salt("password1")}
+    assert {:error, message} = Argon2.check_pass(user, "password")
+    assert message =~ "invalid password"
+  end
+
+  test "check_pass with custom hash_key" do
+    user = %{encrypted_password: Argon2.hash_pwd_salt("password")}
+    assert {:ok, user_1} = Argon2.check_pass(user, "password")
+    assert user_1 == user
+    user = %{arrr: Argon2.hash_pwd_salt("password")}
+    assert {:ok, user_1} = Argon2.check_pass(user, "password", hash_key: :arrr)
+    assert user_1 == user
+    user = %{arrrggghh: Argon2.hash_pwd_salt("password")}
+    assert {:error, message} = Argon2.check_pass(user, "password")
+    assert message =~ "no password hash found in the user struct"
   end
 end
