@@ -118,15 +118,6 @@ defmodule Argon2 do
     end
   end
 
-  @impl true
-  def no_user_verify(opts \\ []) do
-    hash_pwd_salt("", opts)
-    false
-  end
-
-  @impl true
-  def report(opts \\ []), do: Argon2.Stats.report(opts)
-
   defp argon2_type("$argon2id" <> _), do: 2
   defp argon2_type("$argon2i" <> _), do: 1
   defp argon2_type("$argon2d" <> _), do: 0
