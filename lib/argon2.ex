@@ -193,6 +193,12 @@ defmodule Argon2 do
     Base.configured_opts(opts) != Base.provided_opts(hash)
   end
 
+  @doc """
+  Checks whether this module can verify the provided hash.
+  """
+  def can_verify_hash("$argon2" <> _), do: true
+  def can_verify_hash(_), do: false
+
   defp argon2_type("$argon2id" <> _), do: 2
   defp argon2_type("$argon2i" <> _), do: 1
   defp argon2_type("$argon2d" <> _), do: 0
