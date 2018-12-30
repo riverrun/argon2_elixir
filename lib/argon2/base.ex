@@ -63,6 +63,12 @@ defmodule Argon2.Base do
   def encodedlen_nif(_, _, _, _, _, _), do: :erlang.nif_error(:not_loaded)
 
   @doc """
+  Get the current version of the argon2 implementation.
+  """
+  def version_nif
+  def version_nif, do: :erlang.nif_error(:not_loaded)
+
+  @doc """
   Hash a password using Argon2.
 
   ## Configurable parameters
@@ -135,6 +141,91 @@ defmodule Argon2.Base do
 
     hash_nif(t, m, p, password, salt, format, hashlen, encodedlen, argon2_type, 0)
     |> handle_result(options, format)
+  end
+
+  @doc """
+  Returns the provided, configured or default (in that order) options in a
+  keyword list.
+
+  ## Options
+
+  There are six options (t_cost, m_cost, parallelism and argon2_type can be used
+  to override the values set in the config):
+
+    * `:t_cost` - time cost
+    * `:m_cost` - memory usage
+    * `:parallelism` - number of parallel threads
+    * `:format` - output format
+      * this value can be
+        * `:encoded` - encoded with Argon2 crypt format
+        * `:raw_hash` - raw hash output in hexadecimal format
+        * `:report` - raw hash and encoded hash, together with the options used
+      * `:encoded` is the default
+    * `:hashlen` - length of the hash (in bytes)
+      * the default is 32
+    * `:argon2_type` - Argon2 type
+      * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
+      * the default is 1 (Argon2i)
+  """
+  def configured_opts(opts \\ []) do
+    {t, m, p, len, type} = hash_opts opts
+    [
+      t_cost: t,
+      m_cost: m,
+      parallelism: p,
+      hashlen: len,
+      argon2_type: type,
+      version: version_nif()
+    ]
+  end
+
+  @doc """
+  Returns the options used to generate the hash in a keyword list.
+
+  ## Options
+
+  There are six options (t_cost, m_cost, parallelism and argon2_type can be used
+  to override the values set in the config):
+
+    * `:t_cost` - time cost
+    * `:m_cost` - memory usage
+    * `:parallelism` - number of parallel threads
+    * `:format` - output format
+      * this value can be
+        * `:encoded` - encoded with Argon2 crypt format
+        * `:raw_hash` - raw hash output in hexadecimal format
+        * `:report` - raw hash and encoded hash, together with the options used
+      * `:encoded` is the default
+    * `:hashlen` - length of the hash (in bytes)
+      * the default is 32
+    * `:argon2_type` - Argon2 type
+      * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
+      * the default is 1 (Argon2i)
+  """
+  def provided_opts(hash) do
+    result = Regex.named_captures ~r/\$argon2(?<type>[id]+)\$v=(?<v>[0-9]+)\$m=(?<m>[0-9]+),t=(?<t>[0-9]+),p=(?<p>[0-9]+)\$[^\$]+\$(?<digest>.+)/, hash
+
+    if result do
+      type = case Map.get(result, "type") do
+        "d" -> 0
+        "i" -> 1
+        "id" -> 2
+      end
+
+      hashlen = Kernel.trunc(:math.log2(:math.pow(64, String.length(Map.get(result, "digest")))) / 8)
+      m = Kernel.trunc(:math.log2(elem(Integer.parse(Map.get(result, "m")), 0)))
+
+      [
+        t_cost: elem(Integer.parse(Map.get(result, "t")), 0),
+        m_cost: m,
+        parallelism: elem(Integer.parse(Map.get(result, "p")), 0),
+        hashlen: hashlen,
+        argon2_type: type,
+        version: elem(Integer.parse(Map.get(result, "v")), 0),
+      ]
+    else
+      nil
+    end
   end
 
   defp load_nif do

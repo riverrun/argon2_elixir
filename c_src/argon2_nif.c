@@ -195,6 +195,10 @@ static ERL_NIF_TERM argon2_encodedlen_nif(ErlNifEnv *env, int argc, const ERL_NI
 	return enif_make_int(env, ret);
 }
 
+static ERL_NIF_TERM argon2_version_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+	return enif_make_int(env, ARGON2_VERSION_NUMBER);
+}
+
 static int upgrade(ErlNifEnv *env, void **priv_data, void **old_priv_data, ERL_NIF_TERM load_info)
 {
 	return 0;
@@ -205,7 +209,8 @@ static ErlNifFunc argon2_nif_funcs[] =
 	{"hash_nif", 10, argon2_hash_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{"verify_nif", 3, argon2_verify_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{"error_nif", 1, argon2_error_nif},
-	{"encodedlen_nif", 6, argon2_encodedlen_nif}
+	{"encodedlen_nif", 6, argon2_encodedlen_nif},
+	{"version_nif", 0, argon2_version_nif}
 };
 
 ERL_NIF_INIT(Elixir.Argon2.Base, argon2_nif_funcs, NULL, NULL, upgrade, NULL)

@@ -185,6 +185,14 @@ defmodule Argon2 do
     false
   end
 
+  @doc """
+  Check if the provided hash is an argon2 hash with the same settings
+  as provided in opts (or in the settings module).
+  """
+  def needs_rehash hash, opts \\ [] do
+    Base.configured_opts(opts) != Base.provided_opts(hash)
+  end
+
   defp argon2_type("$argon2id" <> _), do: 2
   defp argon2_type("$argon2i" <> _), do: 1
   defp argon2_type("$argon2d" <> _), do: 0
