@@ -7,7 +7,7 @@ defmodule Argon2Test do
   test "only output encoded hash" do
     result = Base.hash_password("password", "somesalt")
     assert is_binary(result)
-    assert String.starts_with?(result, "$argon2id$v=19$m=65536,t=6,p=1")
+    assert String.starts_with?(result, "$argon2id$v=19$m=1048576,t=1,p=4")
   end
 
   test "only output raw hash" do
@@ -21,7 +21,7 @@ defmodule Argon2Test do
     assert is_binary(raw)
     assert is_binary(encoded)
     refute String.starts_with?(raw, "$argon2")
-    assert String.starts_with?(encoded, "$argon2id$v=19$m=65536,t=6,p=1")
+    assert String.starts_with?(encoded, "$argon2id$v=19$m=1048576,t=1,p=4")
   end
 
   test "customizing parameters with config" do
@@ -29,7 +29,7 @@ defmodule Argon2Test do
     Application.put_env(:argon2_elixir, :m_cost, 12)
     Application.put_env(:argon2_elixir, :argon2_type, 2)
     result = Base.hash_password("password", "somesalt")
-    assert String.starts_with?(result, "$argon2id$v=19$m=4096,t=3,p=1")
+    assert String.starts_with?(result, "$argon2id$v=19$m=4096,t=3,p=4")
     Application.delete_env(:argon2_elixir, :t_cost)
     Application.delete_env(:argon2_elixir, :m_cost)
     Application.delete_env(:argon2_elixir, :argon2_type)
@@ -76,7 +76,9 @@ defmodule Argon2Test do
   end
 
   test "add_hash with custom hash_key" do
-    assert %{encrypted_password: hash, password: nil} = Argon2.add_hash("password", hash_key: :encrypted_password)
+    assert %{encrypted_password: hash, password: nil} =
+             Argon2.add_hash("password", hash_key: :encrypted_password)
+
     assert Argon2.verify_pass("password", hash)
   end
 

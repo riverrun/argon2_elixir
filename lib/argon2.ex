@@ -78,6 +78,7 @@ defmodule Argon2 do
   def gen_salt(salt_len \\ 16), do: :crypto.strong_rand_bytes(salt_len)
 
   @doc """
+  MOVE THESE DOCS TO moduledoc?
   Generate a random salt and hash a password using Argon2.
 
   ## Options
