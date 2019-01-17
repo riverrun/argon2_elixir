@@ -1,6 +1,6 @@
 # Argon2
 
-[![Patreon](https://img.shields.io/badge/patreon-donate-brightgreen.svg)](https://www.patreon.com/riverrun)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/alovedalongthe)
 [![Hex.pm Version](http://img.shields.io/hexpm/v/argon2_elixir.svg)](https://hex.pm/packages/argon2_elixir)
 
 Argon2 password hashing for Elixir.
@@ -83,11 +83,8 @@ There are many ways you can contribute to the development of this library, inclu
 
 ## Donations
 
-You can support the ongoing maintenance of this project by
-[making donations through Patreon](https://www.patreon.com/riverrun).
-
-Patreon, by default, will bill you on a monthly basis. If you prefer to make a one-off payment,
-see [this guide](https://support.patreon.com/hc/en-us/articles/204606215-Can-I-make-a-one-time-payment-).
+If you would like to buy me a cup of coffee, you can
+do so through [paypal](https://www.paypal.me/alovedalongthe)
 
 ### License
 
