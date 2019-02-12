@@ -2,16 +2,47 @@ defmodule Argon2 do
   @moduledoc """
   Elixir wrapper for the Argon2 password hashing function.
 
-  This library can be used on its own, or it can be used together with
-  [Comeonin](https://hexdocs.pm/comeonin/api-reference.html), which
-  provides a higher-level api.
+  This module implements the Comeonin and Comeonin.PasswordHash behaviours,
+  providing the following functions:
 
-  Before using Argon2, you will need to configure it. Read the documentation
-  for Argon2.Stats for more information about configuration. After that,
-  most users will just need to use the `hash_pwd_salt/2` and `verify_pass/3`
-  functions from this module.
+    * `add_hash/2` - takes a password as input and returns a map containing the password hash
+    * `check_pass/3` - takes a user struct and password as input and verifies the password
+    * `no_user_verify/1` - runs the hash function, but always returns false
+    * `hash_pwd_salt/2` - hashes the password with a randomly-generated salt
+    * `verify_pass/2` - verifies a password
 
   For a lower-level API, see Argon2.Base.
+
+  ## Configuration
+
+  See the documentation for Argon2.Stats for information about configuration.
+
+  ## Options
+
+  In addition to the options listed below, the `add_hash`, `no_user_verify`
+  and `hash_pwd_salt` functions all take options that are then passed on
+  to the `hash_password` function in the Argon2.Base module.
+  See the documentation for `Argon2.Base.hash_password` for details.
+
+  ### add_hash
+
+    * `hash_key` - the key used in the map for the password hash
+      * the default is `password_hash`
+    * `:salt_len` - the length of the random salt
+      * the default is 16 (the minimum is 8) bytes
+
+  ### check_pass
+
+    * `hash_key` - the key used in the user struct for the password hash
+      * if this is not set, `check_pass` will look for `password_hash`, and then `encrypted_password`
+    * `hide_user` - run `no_user_verify` to prevent user enumeration
+      * the default is true
+      * set this to false if you do not want to hide usernames
+
+  ### hash_pwd_salt
+
+    * `:salt_len` - the length of the random salt
+      * the default is 16 (the minimum is 8) bytes
 
   ## Argon2
 
@@ -20,7 +51,7 @@ defmodule Argon2 do
   Argon2 is a memory-hard password hashing function which can be used to hash
   passwords for credential storage, key derivation, or other applications.
 
-  Argon2 has the following three variants (Argon2i is the default):
+  Argon2 has the following three variants (Argon2id is the default):
 
     * Argon2d - suitable for applications with no threats from side-channel
     timing attacks (eg. cryptocurrencies)
@@ -65,6 +96,8 @@ defmodule Argon2 do
   to benefit from using GPUs or other dedicated hardware.
   """
 
+  use Comeonin
+
   alias Argon2.Base
 
   @doc """
@@ -75,41 +108,12 @@ defmodule Argon2 do
   """
   def gen_salt(salt_len \\ 16), do: :crypto.strong_rand_bytes(salt_len)
 
-  @doc """
-  Generate a random salt and hash a password using Argon2.
-
-  ## Options
-
-  For more information about the options for the underlying hash function,
-  see the documentation for Argon2.Base.hash_password/3.
-
-  This function has the following additional option:
-
-    * `:salt_len` - the length of the random salt
-      * the default is 16 (the minimum is 8) bytes
-      * we do not recommend using a salt less than 16 bytes long
-
-  ## Examples
-
-  The following example changes the default `t_cost` and `m_cost`:
-
-      Argon2.hash_pwd_salt("password", [t_cost: 8, m_cost: 20])
-
-  In the example below, the Argon2 type is changed to Argon2id:
-
-      Argon2.hash_pwd_salt("password", [argon2_type: 2])
-
-  To use Argon2d, use `argon2_type: 0`.
-  """
+  @impl true
   def hash_pwd_salt(password, opts \\ []) do
     Base.hash_password(password, Keyword.get(opts, :salt_len, 16) |> gen_salt, opts)
   end
 
-  @doc """
-  Check the password.
-
-  The check is performed in constant time to avoid timing attacks.
-  """
+  @impl true
   def verify_pass(password, stored_hash) do
     hash = :binary.bin_to_list(stored_hash)
 
@@ -117,72 +121,6 @@ defmodule Argon2 do
       0 -> true
       _ -> false
     end
-  end
-
-  @doc """
-  Verify an encoded Argon2 hash.
-
-  This function is deprecated, and it will be removed in version 2.0.
-  Please use `verify_pass` instead.
-  """
-  def verify_hash(stored_hash, password, opts \\ [])
-
-  def verify_hash(stored_hash, password, _) do
-    IO.puts(:stderr, "Argon2.verify_hash is deprecated - please use Argon2.verify_pass instead")
-    hash = :binary.bin_to_list(stored_hash)
-
-    case Base.verify_nif(hash, password, argon2_type(stored_hash)) do
-      0 -> true
-      _ -> false
-    end
-  end
-
-  @doc """
-  A dummy verify function to help prevent user enumeration.
-
-  This function hashes the password and then returns false, and it is
-  intended to make it more difficult for any potential attacker to find
-  valid usernames by using timing attacks. This function is only useful
-  if it is used as part of a policy of hiding usernames. For more information,
-  see the section below on username obfuscation.
-
-  It is important that this function is called with the same options
-  that are used to hash the password.
-
-  ## Example
-
-  The following example looks for the user in the database and checks the
-  password with the stored password hash if the user is found. It then
-  returns the user struct, if the password is correct, or false. If no user
-  is found, the `no_user_verify` function is called. This will take the same
-  time to run as the `verify_pass` function. This means that the end user
-  will not be able to find valid usernames just by timing the responses.
-
-      def verify_password(username, password) do
-        case Repo.get_by(User, username: username) do
-          nil -> Argon2.no_user_verify()
-          user -> Argon2.verify_pass(password, user.password_hash) && user
-        end
-      end
-
-  ## Username obfuscation
-
-  In addition to keeping passwords secret, hiding the precise username
-  can help make online attacks more difficult. An attacker would then
-  have to guess a username / password combination, rather than just
-  a password, to gain access.
-
-  This does not mean that the username should be kept completely secret.
-  Adding a short numerical suffix to a user's name, for example, would be
-  sufficient to increase the attacker's work considerably.
-
-  If you are implementing a policy of hiding usernames, it is important
-  to make sure that the username is not revealed by any other part of
-  your application.
-  """
-  def no_user_verify(opts \\ []) do
-    hash_pwd_salt("", opts)
-    false
   end
 
   defp argon2_type("$argon2id" <> _), do: 2

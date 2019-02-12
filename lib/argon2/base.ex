@@ -65,39 +65,9 @@ defmodule Argon2.Base do
   @doc """
   Hash a password using Argon2.
 
-  ## Configurable parameters
-
-  The following three parameters can be set in the config file:
-
-    * t_cost - time cost
-      * the amount of computation, given in number of iterations
-      * 6 is the default
-    * m_cost - memory usage
-      * 16 is the default - this will produce a memory usage of 2 ^ 16 KiB (64 MiB)
-    * parallelism - number of parallel threads
-      * 1 is the default
-    * argon2_type - argon2 variant to use
-      * 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
-      * 1 is the default (Argon2i)
-
-  ### Production values
-
-  See the documentation for Argon2.Stats.
-
-  ### Test values
-
-  The following values can be used to speed up tests.
-
-      config :argon2_elixir,
-        t_cost: 1,
-        m_cost: 8
-
-  NB. do not use these values in production.
-
   ## Options
 
-  There are six options (t_cost, m_cost, parallelism and argon2_type can be used
-  to override the values set in the config):
+  There are six options:
 
     * `:t_cost` - time cost
     * `:m_cost` - memory usage
@@ -112,19 +82,23 @@ defmodule Argon2.Base do
       * the default is 32
     * `:argon2_type` - Argon2 type
       * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
-      * the default is 1 (Argon2i)
+      * the default is 2 (Argon2id)
+
+  The `t_cost`, `m_cost`, `parallelism` and `argon2_type` can also be
+  set in the config. See the documentation for Argon2.Stats for more
+  information about choosing these values.
 
   ## Examples
 
   The following example changes the default `t_cost` and `m_cost`:
 
-      Argon2.Base.hash_password("password", "somesaltSOMESALT", [t_cost: 8, m_cost: 20])
+      Argon2.Base.hash_password("password", "somesaltSOMESALT", [t_cost: 4, m_cost: 18])
 
-  In the example below, the Argon2 type is changed to Argon2id:
+  In the example below, the Argon2 type is changed to Argon2d:
 
-      Argon2.Base.hash_password("password", "somesaltSOMESALT", [argon2_type: 2])
+      Argon2.Base.hash_password("password", "somesaltSOMESALT", [argon2_type: 0])
 
-  To use Argon2d, use `argon2_type: 0`.
+  To use Argon2i, use `argon2_type: 1`.
   """
   def hash_password(password, salt, opts \\ []) do
     {t, m, p, hashlen, argon2_type} = options = hash_opts(opts)
@@ -144,11 +118,11 @@ defmodule Argon2.Base do
 
   defp hash_opts(opts) do
     {
-      Keyword.get(opts, :t_cost, Application.get_env(:argon2_elixir, :t_cost, 6)),
-      Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 16)),
-      Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 1)),
+      Keyword.get(opts, :t_cost, Application.get_env(:argon2_elixir, :t_cost, 8)),
+      Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 17)),
+      Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 4)),
       Keyword.get(opts, :hashlen, 32),
-      Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 1))
+      Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 2))
     }
   end
 
