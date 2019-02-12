@@ -2,35 +2,55 @@ defmodule Argon2.Stats do
   @moduledoc """
   Module to provide statistics for the Argon2 password hashing function.
 
-  The default parameters are:
+  The `report` function in this module can be used to help you configure
+  Argon2.
 
-    * t_cost: 6
-    * m_cost: 16 (64 MiB of memory)
-    * parallelism: 1
+  ## Configuration
 
-  However, the parameters you use depend a lot on the hardware you are
-  using, and so it is important to measure the function's running time
-  and adjust the parameters accordingly.
+  The following four parameters can be set in the config file
+  (these can all be overridden using keyword options):
 
-  Below is a guide on how to choose the parameters and what kind of
-  running time is recommended.
+    * t_cost - time cost
+      * the amount of computation, given in number of iterations
+      * 8 is the default
+    * m_cost - memory usage
+      * 17 is the default - this will produce a memory usage of 128 MiB (2 ^ 17 KiB)
+    * parallelism - number of parallel threads
+      * 4 is the default
+    * argon2_type - argon2 variant to use
+      * 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
+      * 2 is the default (Argon2id)
+
+  It is important to note that the default values are not necessarily
+  the recommended values. A lot will depend on what hardware you are
+  using and how much time you want the hashing function to take. See
+  the Choosing parameters section for more details.
+
+  ### Test values
+
+  The following values can be used to speed up tests.
+
+      config :argon2_elixir,
+        t_cost: 1,
+        m_cost: 8
+
+  NB. do not use these values in production.
 
   ## Choosing parameters
 
-    1. Decide how much memory the function should use
-    2. Decide how many threads to use
-    3. Set the t_cost to 3 and measure the time it takes to hash a password
-      * If the function is too slow, reduce memory usage, but keep t_cost at 3
-      * If the function is too fast, increase the t_cost
+  The following is a guide on how to choose the parameters.
 
-  For online use - for example, logging in on a website - the function should
-  take anything between 250 milliseconds and one second. For a desktop
-  application, the function could take longer, anything from several seconds
-  to 5 seconds, as long as the user only has to log in once per session.
-  These numbers are based on the [libsodium documentation for
-  Argon2i](https://download.libsodium.org/doc/password_hashing/the_argon2i_function.html)
-  and the previous
-  [NIST recommendations](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf).
+    1. Decide which type to use. If you do not know the difference between
+    the types, choose Argon2id.
+    2. Decide how many threads to use - the parallelism option.
+    3. Decide how much memory each call should use - m_cost.
+    4. Decide how much time each call should take.
+      a. The Argon2 draft guidelines recommend 500 milliseconds (0.5 seconds).
+    5. Run the function using the values chosen in steps 1-3. Work out
+    the maximum t_cost (number of iterations) such that the running time
+    does not exceed the value chosen in step 4. If the time taken exceeds
+    the value chosen in step 4 even for one iteration, reduce the m_cost
+    accordingly.
   """
 
   alias Argon2.Base
@@ -61,7 +81,8 @@ defmodule Argon2.Stats do
 
     {raw, encoded, {t, m, p, _, argon2_type}} = result
 
-    Argon2.verify_pass(password, encoded)
+    password
+    |> Argon2.verify_pass(encoded)
     |> format_result(argon2_type, t, m, p, raw, encoded, exec_time)
   end
 

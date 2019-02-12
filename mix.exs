@@ -29,7 +29,7 @@ defmodule Argon2.Mixfile do
 
   defp deps do
     [
-      {:comeonin, github: "riverrun/comeonin", branch: "v5.0"},
+      {:comeonin, "~> 5.0"},
       {:elixir_make, "~> 0.4", runtime: false},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]

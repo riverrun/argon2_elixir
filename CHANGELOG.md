@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.0
+
+* Enhancements
+  * Updated to use the Comeonin and Comeonin.PasswordHash behaviours (Comeonin v5.0)
+  * Made Argon2id the default Argon2 type
+  * Changed default t_cost, m_cost and parallelism values
+
 ## v1.3.1
 
 * Bug fixes

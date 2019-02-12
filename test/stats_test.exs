@@ -6,8 +6,8 @@ defmodule Argon2.StatsTest do
 
   test "print report with default options" do
     report = capture_io(fn -> Stats.report() end)
-    assert report =~ "Iterations:\t1\n"
-    assert report =~ "Memory:\t\t1024 MiB\n"
+    assert report =~ "Iterations:\t8\n"
+    assert report =~ "Memory:\t\t128 MiB\n"
     assert report =~ "Parallelism:\t4\n"
     assert report =~ "Verification OK"
   end

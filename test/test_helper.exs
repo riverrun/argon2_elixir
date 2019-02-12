@@ -43,4 +43,24 @@ defmodule Argon2TestHelper do
     ranges = [{1, -1}, {0, -2}, {2, -1}, {0, -3}, {2, -2}, {1, -3}, {3, -2}, {2, -3}]
     for {first, last} <- ranges, do: String.slice(password, first..last)
   end
+
+  def add_hash_check(password, wrong_list) do
+    %{password_hash: hash, password: nil} = Argon2.add_hash(password)
+    assert Argon2.verify_pass(password, hash)
+
+    for wrong <- wrong_list do
+      refute Argon2.verify_pass(wrong, hash)
+    end
+  end
+
+  def check_pass_check(password, wrong_list) do
+    hash = Argon2.hash_pwd_salt(password)
+    user = %{id: 2, name: "fred", password_hash: hash}
+    assert Argon2.check_pass(user, password) == {:ok, user}
+    assert Argon2.check_pass(nil, password) == {:error, "invalid user-identifier"}
+
+    for wrong <- wrong_list do
+      assert Argon2.check_pass(user, wrong) == {:error, "invalid password"}
+    end
+  end
 end

@@ -7,7 +7,7 @@ defmodule Argon2Test do
   test "only output encoded hash" do
     result = Base.hash_password("password", "somesalt")
     assert is_binary(result)
-    assert String.starts_with?(result, "$argon2id$v=19$m=1048576,t=1,p=4")
+    assert String.starts_with?(result, "$argon2id$v=19$m=131072,t=8,p=4")
   end
 
   test "only output raw hash" do
@@ -21,7 +21,7 @@ defmodule Argon2Test do
     assert is_binary(raw)
     assert is_binary(encoded)
     refute String.starts_with?(raw, "$argon2")
-    assert String.starts_with?(encoded, "$argon2id$v=19$m=1048576,t=1,p=4")
+    assert String.starts_with?(encoded, "$argon2id$v=19$m=131072,t=8,p=4")
   end
 
   test "customizing parameters with config" do
@@ -59,8 +59,8 @@ defmodule Argon2Test do
   end
 
   test "duration of user obfuscation function is configurable" do
-    {short_time, _} = :timer.tc(Argon2, :no_user_verify, [[t_cost: 3, m_cost: 10]])
-    {long_time, _} = :timer.tc(Argon2, :no_user_verify, [[t_cost: 6, m_cost: 12]])
+    {short_time, _} = :timer.tc(Argon2, :no_user_verify, [[t_cost: 1, m_cost: 10]])
+    {long_time, _} = :timer.tc(Argon2, :no_user_verify, [[t_cost: 3, m_cost: 12]])
     assert long_time > short_time
   end
 
@@ -70,38 +70,47 @@ defmodule Argon2Test do
     end
   end
 
-  test "add_hash with default arguments" do
-    assert %{password_hash: hash, password: nil} = Argon2.add_hash("password")
-    assert Argon2.verify_pass("password", hash)
+  test "add hash to map and set password to nil" do
+    wrong_list = ["êäöéaoeôáåë", "åáoêëäéôeaö", "aäáeåëéöêôo", ""]
+    add_hash_check("aáåäeéêëoôö", wrong_list)
   end
 
-  test "add_hash with custom hash_key" do
-    assert %{encrypted_password: hash, password: nil} =
+  test "add_hash and check_pass" do
+    assert {:ok, user} = Argon2.add_hash("password") |> Argon2.check_pass("password")
+    assert {:error, "invalid password"} = Argon2.add_hash("pass") |> Argon2.check_pass("password")
+    assert Map.has_key?(user, :password_hash)
+  end
+
+  test "add_hash with a custom hash_key and check_pass" do
+    assert {:ok, user} =
              Argon2.add_hash("password", hash_key: :encrypted_password)
+             |> Argon2.check_pass("password")
 
-    assert Argon2.verify_pass("password", hash)
-  end
+    assert {:error, "invalid password"} =
+             Argon2.add_hash("pass", hash_key: :encrypted_password)
+             |> Argon2.check_pass("password")
 
-  test "check_pass with default arguments" do
-    user = %{password_hash: Argon2.hash_pwd_salt("password")}
-    assert {:ok, user_1} = Argon2.check_pass(user, "password")
-    assert user_1 == user
-    assert {:error, message} = Argon2.check_pass(nil, "password")
-    assert message =~ "invalid user-identifier"
-    user = %{password_hash: Argon2.hash_pwd_salt("password1")}
-    assert {:error, message} = Argon2.check_pass(user, "password")
-    assert message =~ "invalid password"
+    assert Map.has_key?(user, :encrypted_password)
   end
 
   test "check_pass with custom hash_key" do
-    user = %{encrypted_password: Argon2.hash_pwd_salt("password")}
-    assert {:ok, user_1} = Argon2.check_pass(user, "password")
-    assert user_1 == user
-    user = %{arrr: Argon2.hash_pwd_salt("password")}
-    assert {:ok, user_1} = Argon2.check_pass(user, "password", hash_key: :arrr)
-    assert user_1 == user
-    user = %{arrrggghh: Argon2.hash_pwd_salt("password")}
-    assert {:error, message} = Argon2.check_pass(user, "password")
-    assert message =~ "no password hash found in the user struct"
+    assert {:ok, user} =
+             Argon2.add_hash("password", hash_key: :custom_hash)
+             |> Argon2.check_pass("password", hash_key: :custom_hash)
+
+    assert Map.has_key?(user, :custom_hash)
+  end
+
+  test "check_pass with invalid hash_key" do
+    {:error, message} =
+      Argon2.add_hash("password", hash_key: :unconventional_name)
+      |> Argon2.check_pass("password")
+
+    assert message =~ "no password hash found"
+  end
+
+  test "check_pass with password that is not a string" do
+    assert {:error, message} = Argon2.add_hash("pass") |> Argon2.check_pass(nil)
+    assert message =~ "password is not a string"
   end
 end

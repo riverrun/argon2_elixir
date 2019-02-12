@@ -2,16 +2,47 @@ defmodule Argon2 do
   @moduledoc """
   Elixir wrapper for the Argon2 password hashing function.
 
-  This library can be used on its own, or it can be used together with
-  [Comeonin](https://hexdocs.pm/comeonin/api-reference.html), which
-  provides a higher-level api.
+  This module implements the Comeonin and Comeonin.PasswordHash behaviours,
+  providing the following functions:
 
-  Before using Argon2, you will need to configure it. Read the documentation
-  for Argon2.Stats for more information about configuration. After that,
-  most users will just need to use the `hash_pwd_salt/2` and `verify_pass/3`
-  functions from this module.
+    * `add_hash/2` - takes a password as input and returns a map containing the password hash
+    * `check_pass/3` - takes a user struct and password as input and verifies the password
+    * `no_user_verify/1` - runs the hash function, but always returns false
+    * `hash_pwd_salt/2` - hashes the password with a randomly-generated salt
+    * `verify_pass/2` - verifies a password
 
   For a lower-level API, see Argon2.Base.
+
+  ## Configuration
+
+  See the documentation for Argon2.Stats for information about configuration.
+
+  ## Options
+
+  In addition to the options listed below, the `add_hash`, `no_user_verify`
+  and `hash_pwd_salt` functions all take options that are then passed on
+  to the `hash_password` function in the Argon2.Base module.
+  See the documentation for `Argon2.Base.hash_password` for details.
+
+  ### add_hash
+
+    * `hash_key` - the key used in the map for the password hash
+      * the default is `password_hash`
+    * `:salt_len` - the length of the random salt
+      * the default is 16 (the minimum is 8) bytes
+
+  ### check_pass
+
+    * `hash_key` - the key used in the user struct for the password hash
+      * if this is not set, `check_pass` will look for `password_hash`, and then `encrypted_password`
+    * `hide_user` - run `no_user_verify` to prevent user enumeration
+      * the default is true
+      * set this to false if you do not want to hide usernames
+
+  ### hash_pwd_salt
+
+    * `:salt_len` - the length of the random salt
+      * the default is 16 (the minimum is 8) bytes
 
   ## Argon2
 
@@ -20,7 +51,7 @@ defmodule Argon2 do
   Argon2 is a memory-hard password hashing function which can be used to hash
   passwords for credential storage, key derivation, or other applications.
 
-  Argon2 has the following three variants (Argon2i is the default):
+  Argon2 has the following three variants (Argon2id is the default):
 
     * Argon2d - suitable for applications with no threats from side-channel
     timing attacks (eg. cryptocurrencies)
@@ -77,33 +108,6 @@ defmodule Argon2 do
   """
   def gen_salt(salt_len \\ 16), do: :crypto.strong_rand_bytes(salt_len)
 
-  @doc """
-  MOVE THESE DOCS TO moduledoc?
-  Generate a random salt and hash a password using Argon2.
-
-  ## Options
-
-  For more information about the options for the underlying hash function,
-  see the documentation for Argon2.Base.hash_password/3.
-
-  This function has the following additional option:
-
-    * `:salt_len` - the length of the random salt
-      * the default is 16 (the minimum is 8) bytes
-      * we do not recommend using a salt less than 16 bytes long
-
-  ## Examples
-
-  The following example changes the default `t_cost` and `m_cost`:
-
-      Argon2.hash_pwd_salt("password", [t_cost: 8, m_cost: 20])
-
-  In the example below, the Argon2 type is changed to Argon2id:
-
-      Argon2.hash_pwd_salt("password", [argon2_type: 2])
-
-  To use Argon2d, use `argon2_type: 0`.
-  """
   @impl true
   def hash_pwd_salt(password, opts \\ []) do
     Base.hash_password(password, Keyword.get(opts, :salt_len, 16) |> gen_salt, opts)
