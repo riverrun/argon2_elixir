@@ -44,6 +44,47 @@ defmodule Argon2 do
     * `:salt_len` - the length of the random salt
       * the default is 16 (the minimum is 8) bytes
 
+  ## Examples
+
+  The following examples show how to hash a password with a randomly-generated
+  salt and then verify a password:
+
+      iex> hash = Argon2.hash_pwd_salt("password")
+      ...> Argon2.verify_pass("password", hash)
+      true
+
+      iex> hash = Argon2.hash_pwd_salt("password")
+      ...> Argon2.verify_pass("incorrect", hash)
+      false
+
+  ### add_hash
+
+  The `put_pass_hash` function below is an example of how you can use
+  `add_hash` to add the password hash to the Ecto changeset.
+
+      defp put_pass_hash(%Ecto.Changeset{valid?: true, changes:
+          %{password: password}} = changeset) do
+        change(changeset, Argon2.add_hash(password))
+      end
+
+      defp put_pass_hash(changeset), do: changeset
+
+  This function will return a changeset with `%{password_hash: password_hash, password: nil}`
+  added to the `changes` map.
+
+  ### check_pass
+
+  The following is an example of calling this function with no options:
+
+    def verify_user(%{"password" => password} = params) do
+      params
+      |> Accounts.get_by()
+      |> Argon2.check_pass(password)
+    end
+
+  The `Accounts.get_by` function in this example takes the user parameters
+  (for example, email and password) as input and returns a user struct or nil.
+ 
   ## Argon2
 
   Argon2 is the winner of the [Password Hashing Competition (PHC)](https://password-hashing.net).

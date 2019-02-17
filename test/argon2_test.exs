@@ -1,5 +1,6 @@
 defmodule Argon2Test do
   use ExUnit.Case
+  doctest Argon2
 
   import Argon2TestHelper
   alias Argon2.Base

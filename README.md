@@ -4,9 +4,24 @@
 
 Argon2 password hashing library for Elixir.
 
-[Argon2](https://github.com/P-H-C/phc-winner-argon2) is the official winner of the
-Password Hashing Competition, a several year project to identify a successor to
-Bcrypt / Pbkdf2 / Scrypt password hashing methods.
+[Argon2](https://github.com/P-H-C/phc-winner-argon2) is the official winner
+of the [Password Hashing Competition](https://password-hashing.net/),
+a several year project to identify a successor to Bcrypt / Pbkdf2 / Scrypt
+password hashing methods.
+
+## Changes in version 2
+
+In version 2.0, argon2_elixir has been updated to implement the Comeonin
+and Comeonin.PasswordHash behaviours.
+
+It now has the following two additional convenience functions:
+
+* `add_hash/2`
+  * same as Comeonin.Argon2.add_hash in Comeonin version 4
+  * hashes a password and returns a map with the password hash
+* `check_pass/3`
+  * same as Comeonin.Argon2.check_pass in Comeonin version 4
+  * takes a user struct and password as input and verifies the password
 
 ## Installation
 
