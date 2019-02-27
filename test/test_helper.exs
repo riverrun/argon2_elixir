@@ -19,48 +19,4 @@ defmodule Argon2TestHelper do
   def verify_test_helper(stored_hash, password, version) do
     Base.verify_nif(:binary.bin_to_list(stored_hash), password, version)
   end
-
-  def encoded_hash_check(password) do
-    wrong_list = wrong_passwords(password)
-
-    for argon2_type <- 0..2 do
-      encoded = Argon2.hash_pwd_salt(password, t_cost: 3, m_cost: 12, argon2_type: argon2_type)
-      assert Argon2.verify_pass(password, encoded)
-
-      for wrong <- wrong_list do
-        refute Argon2.verify_pass(wrong, encoded)
-      end
-    end
-  end
-
-  defp wrong_passwords(password) do
-    for(num <- 2..6, do: String.duplicate(password, num)) ++
-      for(num <- 0..9, do: password <> Integer.to_string(num)) ++
-      slices(password) ++ [String.reverse(password), ""]
-  end
-
-  defp slices(password) do
-    ranges = [{1, -1}, {0, -2}, {2, -1}, {0, -3}, {2, -2}, {1, -3}, {3, -2}, {2, -3}]
-    for {first, last} <- ranges, do: String.slice(password, first..last)
-  end
-
-  def add_hash_check(password, wrong_list) do
-    %{password_hash: hash, password: nil} = Argon2.add_hash(password)
-    assert Argon2.verify_pass(password, hash)
-
-    for wrong <- wrong_list do
-      refute Argon2.verify_pass(wrong, hash)
-    end
-  end
-
-  def check_pass_check(password, wrong_list) do
-    hash = Argon2.hash_pwd_salt(password)
-    user = %{id: 2, name: "fred", password_hash: hash}
-    assert Argon2.check_pass(user, password) == {:ok, user}
-    assert Argon2.check_pass(nil, password) == {:error, "invalid user-identifier"}
-
-    for wrong <- wrong_list do
-      assert Argon2.check_pass(user, wrong) == {:error, "invalid password"}
-    end
-  end
 end

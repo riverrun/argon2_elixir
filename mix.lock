@@ -1,5 +1,5 @@
 %{
-  "comeonin": {:hex, :comeonin, "5.0.0", "e87716d3b1c31e56312f6a1545a5548cdc80376cff5025fe3b12be2046934837", [:mix], [], "hexpm"},
+  "comeonin": {:hex, :comeonin, "5.1.0", "dc7dc04cc2fd12ffee16ddf3f91e876ee1a686447be403baf6f89da38e215365", [:mix], [], "hexpm"},
   "earmark": {:hex, :earmark, "1.2.5", "4d21980d5d2862a2e13ec3c49ad9ad783ffc7ca5769cf6ff891a4553fbaae761", [:mix], [], "hexpm"},
   "elixir_make": {:hex, :elixir_make, "0.4.2", "332c649d08c18bc1ecc73b1befc68c647136de4f340b548844efc796405743bf", [:mix], [], "hexpm"},
   "ex_doc": {:hex, :ex_doc, "0.19.1", "519bb9c19526ca51d326c060cb1778d4a9056b190086a8c6c115828eaccea6cf", [:mix], [{:earmark, "~> 1.1", [hex: :earmark, repo: "hexpm", optional: false]}, {:makeup_elixir, "~> 0.7", [hex: :makeup_elixir, repo: "hexpm", optional: false]}], "hexpm"},

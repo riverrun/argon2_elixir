@@ -2,8 +2,21 @@ defmodule Argon2Test do
   use ExUnit.Case
   doctest Argon2
 
-  import Argon2TestHelper
+  import Comeonin.BehaviourTestHelper
+
   alias Argon2.Base
+
+  test "implementation of Comeonin.PasswordHash behaviour" do
+    password = Enum.random(ascii_passwords())
+    assert correct_password_true(Argon2, password)
+    assert wrong_password_false(Argon2, password)
+  end
+
+  test "Comeonin.PasswordHash behaviour with non-ascii characters" do
+    password = Enum.random(non_ascii_passwords())
+    assert correct_password_true(Argon2, password)
+    assert wrong_password_false(Argon2, password)
+  end
 
   test "only output encoded hash" do
     result = Base.hash_password("password", "somesalt")
@@ -36,25 +49,6 @@ defmodule Argon2Test do
     Application.delete_env(:argon2_elixir, :argon2_type)
   end
 
-  test "hashing and checking passwords" do
-    encoded_hash_check("password")
-    encoded_hash_check("hard2guess")
-  end
-
-  test "hashing and checking passwords with characters from the extended ascii set" do
-    encoded_hash_check("aáåäeéêëoôö")
-    encoded_hash_check("aáåä eéêëoôö")
-  end
-
-  test "hashing and checking passwords with non-ascii characters" do
-    encoded_hash_check("Сколько лет, сколько зим")
-    encoded_hash_check("สวัสดีครับ")
-  end
-
-  test "hashing and checking passwords with mixed characters" do
-    encoded_hash_check("Я❤três☕ où☔")
-  end
-
   test "user obfuscation function always returns false" do
     assert Argon2.no_user_verify() == false
   end
@@ -71,15 +65,16 @@ defmodule Argon2Test do
     end
   end
 
-  test "add hash to map and set password to nil" do
-    wrong_list = ["êäöéaoeôáåë", "åáoêëäéôeaö", "aäáeåëéöêôo", ""]
-    add_hash_check("aáåäeéêëoôö", wrong_list)
+  test "add_hash function" do
+    password = Enum.random(ascii_passwords())
+    assert add_hash_creates_map(Argon2, password)
   end
 
-  test "add_hash and check_pass" do
-    assert {:ok, user} = Argon2.add_hash("password") |> Argon2.check_pass("password")
-    assert {:error, "invalid password"} = Argon2.add_hash("pass") |> Argon2.check_pass("password")
-    assert Map.has_key?(user, :password_hash)
+  test "check_pass function" do
+    password = Enum.random(ascii_passwords())
+    assert check_pass_returns_user(Argon2, password)
+    assert check_pass_returns_error(Argon2, password)
+    assert check_pass_nil_user(Argon2)
   end
 
   test "add_hash with a custom hash_key and check_pass" do
