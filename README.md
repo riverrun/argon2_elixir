@@ -1,6 +1,7 @@
 # Argon2
 
 [![Hex.pm Version](http://img.shields.io/hexpm/v/argon2_elixir.svg)](https://hex.pm/packages/argon2_elixir)
+[![Build Status](https://travis-ci.com/riverrun/argon2_elixir.svg?branch=master)](https://travis-ci.com/riverrun/argon2_elixir)
 
 Argon2 password hashing library for Elixir.
 
