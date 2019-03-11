@@ -17,7 +17,10 @@ defmodule Argon2.Mixfile do
       description: @description,
       package: package(),
       source_url: "https://github.com/riverrun/argon2_elixir",
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+      ]
     ]
   end
 
@@ -31,7 +34,8 @@ defmodule Argon2.Mixfile do
     [
       {:comeonin, "~> 5.1"},
       {:elixir_make, "~> 0.4", runtime: false},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.3", only: :dev, runtime: false}
     ]
   end
 
