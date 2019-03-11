@@ -84,7 +84,7 @@ defmodule Argon2 do
 
   The `Accounts.get_by` function in this example takes the user parameters
   (for example, email and password) as input and returns a user struct or nil.
- 
+
   ## Argon2
 
   Argon2 is the winner of the [Password Hashing Competition (PHC)](https://password-hashing.net).
