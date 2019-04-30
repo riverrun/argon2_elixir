@@ -79,7 +79,7 @@ defmodule Argon2 do
       def verify_user(%{"password" => password} = params) do
         params
         |> Accounts.get_by()
-        |> Bcrypt.check_pass(password)
+        |> Argon2.check_pass(password)
       end
 
   The `Accounts.get_by` function in this example takes the user parameters
