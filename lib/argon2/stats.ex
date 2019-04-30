@@ -2,7 +2,7 @@ defmodule Argon2.Stats do
   @moduledoc """
   Module to provide statistics for the Argon2 password hashing function.
 
-  The `report` function in this module can be used to help you configure
+  The `report/1` function in this module can be used to help you configure
   Argon2.
 
   ## Configuration
@@ -58,12 +58,12 @@ defmodule Argon2.Stats do
   @doc """
   Hash a password with Argon2 and print out a report.
 
-  This function hashes the password and salt with Argon2.Base.hash_password/3
+  This function hashes the password and salt with `Argon2.Base.hash_password/3`
   and prints out statistics which can help you choose how to configure Argon2.
 
   ## Options
 
-  In addition to the options for Argon2.Base.hash_password/3, there are
+  In addition to the options for `Argon2.Base.hash_password/3`, there are
   also the following options:
 
     * `:password` - the password used

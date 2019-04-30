@@ -34,7 +34,7 @@ def deps do
 end
 ```
 
-2. Configure `argon2_elixir` - see the documentation for Argon2.Stats for more details
+2. Configure `argon2_elixir` - see the documentation for [`Argon2.Stats`](https://hexdocs.pm/argon2_elixir/Argon2.Stats.html) for more details
 
 
 ## Comeonin wiki
