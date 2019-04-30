@@ -11,18 +11,18 @@ defmodule Argon2 do
     * `hash_pwd_salt/2` - hashes the password with a randomly-generated salt
     * `verify_pass/2` - verifies a password
 
-  For a lower-level API, see Argon2.Base.
+  For a lower-level API, see `Argon2.Base`.
 
   ## Configuration
 
-  See the documentation for Argon2.Stats for information about configuration.
+  See the documentation for `Argon2.Stats` for information about configuration.
 
   ## Options
 
   In addition to the options listed below, the `add_hash`, `no_user_verify`
   and `hash_pwd_salt` functions all take options that are then passed on
-  to the `hash_password` function in the Argon2.Base module.
-  See the documentation for `Argon2.Base.hash_password` for details.
+  to the `hash_password` function in the `Argon2.Base` module.
+  See the documentation for `Argon2.Base.hash_password/3` for details.
 
   ### add_hash
 
@@ -106,7 +106,7 @@ defmodule Argon2 do
     * A **memory** cost, which defines the memory usage, given in kibibytes
     * A **parallelism** degree, which defines the number of parallel threads
 
-  More information can be found in the documentation for the Argon2.Stats
+  More information can be found in the documentation for the `Argon2.Stats`
   module and at the [Argon2 reference C implementation
   repository](https://github.com/P-H-C/phc-winner-argon2).
 
