@@ -26,16 +26,16 @@ defmodule Argon2 do
 
   ### add_hash
 
-    * `hash_key` - the key used in the map for the password hash
+    * `:hash_key` - the key used in the map for the password hash
       * the default is `password_hash`
     * `:salt_len` - the length of the random salt
       * the default is 16 (the minimum is 8) bytes
 
   ### check_pass
 
-    * `hash_key` - the key used in the user struct for the password hash
+    * `:hash_key` - the key used in the user struct for the password hash
       * if this is not set, `check_pass` will look for `password_hash`, and then `encrypted_password`
-    * `hide_user` - run `no_user_verify` to prevent user enumeration
+    * `:hide_user` - run `no_user_verify` to prevent user enumeration
       * the default is true
       * set this to false if you do not want to hide usernames
 
