@@ -3,25 +3,34 @@ defmodule Argon2.ErrorsTest do
 
   alias Argon2.Base
 
-  test "error when salt is too short" do
+  test "raises error when salt is too short" do
     assert_raise ArgumentError, "Salt is too short", fn ->
       Base.hash_password("password", "notsalt")
     end
   end
 
-  test "error when hashlen is too short" do
+  test "raises error when hashlen is too short" do
     assert_raise ArgumentError, "Output is too short", fn ->
       Base.hash_password("password", "somesalt", hashlen: 3)
     end
   end
 
-  test "error when password or salt is nil" do
+  test "raises error when password or salt is nil" do
     assert_raise ArgumentError, fn ->
       Base.hash_password(nil, "somesalt")
     end
 
     assert_raise ArgumentError, fn ->
       Base.hash_password("password", nil)
+    end
+  end
+
+  test "raises error when using verify_pass" do
+    hash = Base.hash_password("", "somesalt")
+    invalid_hash = String.replace(hash, "c29tZXNhbHQ", "bm9zYWx0")
+
+    assert_raise ArgumentError, "Salt is too short", fn ->
+      Argon2.verify_pass("", invalid_hash)
     end
   end
 

@@ -111,6 +111,10 @@ defmodule Argon2.Base do
     |> handle_result(options, format)
   end
 
+  def handle_error(error) do
+    raise ArgumentError, error |> error_nif() |> :binary.list_to_bin()
+  end
+
   defp load_nif do
     path = :filename.join(:code.priv_dir(:argon2_elixir), 'argon2_nif')
     :erlang.load_nif(path, 0)
@@ -131,8 +135,7 @@ defmodule Argon2.Base do
   defp output_opts(_), do: 0
 
   defp handle_result(result, _, _) when is_integer(result) do
-    msg = error_nif(result) |> :binary.list_to_bin()
-    raise ArgumentError, msg
+    handle_error(result)
   end
 
   defp handle_result({_, encoded}, _, 0), do: :binary.list_to_bin(encoded)
