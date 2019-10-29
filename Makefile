@@ -31,8 +31,8 @@ SRC = $(SRC_DIR)/argon2.c $(SRC_DIR)/core.c $(SRC_DIR)/blake2/blake2b.c\
       $(SRC_DIR)/thread.c $(SRC_DIR)/encoding.c $(SRC_DIR)/ref.c\
       c_src/argon2_nif.c
 
-ERLANG_PATH = $(shell erl -eval 'io:format("~ts", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
-CFLAGS += -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I"$(ERLANG_PATH)"
+ERTS_INCLUDE_PATH = $(shell erl -noshell -s init stop -eval "io:setopts(standard_io, [{encoding, unicode}]), io:format(\"~ts/erts-~ts/include/\", [code:root_dir(), erlang:system_info(version)]).")
+CFLAGS += -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I"$(ERTS_INCLUDE_PATH)"
 
 KERNEL_NAME := $(shell uname -s)
 
