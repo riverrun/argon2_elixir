@@ -55,7 +55,7 @@ endif
 
 all: $(LIB_NAME)
 
-$(LIB_NAME): $(SRC)
+	$(LIB_NAME): $(SRC)
 	mkdir -p priv
 	$(CC) $(CFLAGS) $(LIB_CFLAGS) $(SO_LDFLAGS) $^ -o $@
 
