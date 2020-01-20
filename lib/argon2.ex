@@ -60,7 +60,7 @@ defmodule Argon2 do
 
   ## Options
 
-  In addition to the `:salt_len` option show below, this function also takes
+  In addition to the `:salt_len` option shown below, this function also takes
   options that are then passed on to the `hash_password` function in the
   `Argon2.Base` module.
 
