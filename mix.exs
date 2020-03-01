@@ -1,7 +1,7 @@
 defmodule Argon2.Mixfile do
   use Mix.Project
 
-  @version "2.2.1"
+  @version "2.3.0"
 
   @description """
   Argon2 password hashing algorithm for Elixir
@@ -32,8 +32,8 @@ defmodule Argon2.Mixfile do
 
   defp deps do
     [
-      {:comeonin, "~> 5.2"},
-      {:elixir_make, "~> 0.5", runtime: false},
+      {:comeonin, "~> 5.3"},
+      {:elixir_make, "~> 0.6", runtime: false},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0-rc.3", only: :dev, runtime: false}
     ]
