@@ -31,12 +31,16 @@ SRC = $(SRC_DIR)/argon2.c $(SRC_DIR)/core.c $(SRC_DIR)/blake2/blake2b.c\
       $(SRC_DIR)/thread.c $(SRC_DIR)/encoding.c $(SRC_DIR)/ref.c\
       c_src/argon2_nif.c
 
-ERTS_INCLUDE_PATH = $(shell erl -noshell -s init stop -eval "io:setopts(standard_io, [{encoding, unicode}]), io:format(\"~ts/erts-~ts/include/\", [code:root_dir(), erlang:system_info(version)]).")
-CFLAGS += -pthread -O3 -Wall -g -I$(SRC_INC) -I$(SRC_DIR) -Ic_src -I"$(ERTS_INCLUDE_PATH)"
+CFLAGS ?= -g -O3
+CFLAGS += -pthread -Wall -Wno-format-truncation
+CFLAGS += -I"$(ERTS_INCLUDE_DIR)"
+CFLAGS += -I$(SRC_INC) -I$(SRC_DIR) -Ic_src
 
 KERNEL_NAME := $(shell uname -s)
 
-LIB_NAME = priv/argon2_nif.so
+PRIV_DIR = $(MIX_APP_PATH)/priv
+LIB_NAME = $(PRIV_DIR)/argon2_nif.so
+
 ifneq ($(CROSSCOMPILE),)
 	LIB_CFLAGS := -shared -fPIC -fvisibility=hidden
 	SO_LDFLAGS := -Wl,-soname,libargon2.so.0
@@ -53,11 +57,16 @@ else
 	endif
 endif
 
-all: $(LIB_NAME)
+calling_from_make:
+	mix compile
+
+all: $(PRIV_DIR) $(LIB_NAME)
 
 $(LIB_NAME): $(SRC)
-	mkdir -p priv
 	$(CC) $(CFLAGS) $(LIB_CFLAGS) $(SO_LDFLAGS) $^ -o $@
+
+$(PRIV_DIR):
+	mkdir -p $@
 
 clean:
 	rm -f $(LIB_NAME)
