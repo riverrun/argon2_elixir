@@ -45,7 +45,7 @@ defmodule Argon2.Mixfile do
     [
       files: ["lib", "c_src", "argon2/include", "argon2/src", "mix.exs", "Makefile*", "README.md"],
       maintainers: ["David Whitlock"],
-      licenses: ["Apache 2.0"],
+      licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/riverrun/argon2_elixir"}
     ]
   end
