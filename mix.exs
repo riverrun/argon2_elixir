@@ -20,6 +20,9 @@ defmodule Argon2.Mixfile do
       package: package(),
       source_url: "https://github.com/riverrun/argon2_elixir",
       deps: deps(),
+      aliases: [
+        "deps.get": [&update_submodule/1, "deps.get"]
+      ],
       dialyzer: [
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
       ]
@@ -48,5 +51,14 @@ defmodule Argon2.Mixfile do
       licenses: ["Apache 2.0"],
       links: %{"GitHub" => "https://github.com/riverrun/argon2_elixir"}
     ]
+  end
+
+  defp update_submodule(_args) do
+    System.cmd(
+      "git",
+      ["submodule", "update", "--init"],
+      cd: __DIR__,
+      parallelism: true
+    )
   end
 end
