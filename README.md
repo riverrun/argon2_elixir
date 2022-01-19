@@ -1,7 +1,12 @@
 # Argon2
 
-[![Hex.pm Version](http://img.shields.io/hexpm/v/argon2_elixir.svg)](https://hex.pm/packages/argon2_elixir)
 [![Build Status](https://travis-ci.com/riverrun/argon2_elixir.svg?branch=master)](https://travis-ci.com/riverrun/argon2_elixir)
+[![Hex Version](https://img.shields.io/hexpm/v/argon2_elixir.svg)](https://hex.pm/packages/argon2_elixir)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/argon2_elixir/)
+[![Total Download](https://img.shields.io/hexpm/dt/argon2_elixir.svg)](https://hex.pm/packages/argon2_elixir)
+[![License](https://img.shields.io/hexpm/l/argon2_elixir.svg)](https://github.com/riverrun/argon2_elixir/blob/master/LICENSE)
+[![Last Updated](https://img.shields.io/github/last-commit/riverrun/argon2_elixir.svg)](https://github.com/riverrun/argon2_elixir/commits/master)
+
 
 Argon2 password hashing library for Elixir.
 
@@ -12,29 +17,31 @@ password hashing methods.
 
 ## Changes in version 2
 
-In version 2.0, argon2_elixir has been updated to implement the Comeonin
-and Comeonin.PasswordHash behaviours.
+In version 2.0, `argon2_elixir` has been updated to implement the Comeonin
+and `Comeonin.PasswordHash` behaviours.
 
 It now has the following two additional convenience functions:
 
 * `add_hash/2`
-  * same as Comeonin.Argon2.add_hash in Comeonin version 4
+  * same as `Comeonin.Argon2.add_hash/2` in `Comeonin` version 4
   * hashes a password and returns a map with the password hash
 * `check_pass/3`
-  * same as Comeonin.Argon2.check_pass in Comeonin version 4
+  * same as `Comeonin.Argon2.check_pass/3` in `Comeonin` version 4
   * takes a user struct and password as input and verifies the password
 
 ## Installation
 
-1. Add `argon2_elixir` to your list of dependencies in `mix.exs`:
+Add `:argon2_elixir` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:argon2_elixir, "~> 2.0"}]
+  [
+    {:argon2_elixir, "~> 2.0"}
+  ]
 end
 ```
 
-2. Configure `argon2_elixir` - see the documentation for
+Configure `argon2_elixir` - see the documentation for
 [`Argon2.Stats`](https://hexdocs.pm/argon2_elixir/Argon2.Stats.html) for more details
 
 
@@ -68,6 +75,16 @@ buy me a cup of coffee, you can do so at [paypal](https://www.paypal.me/alovedal
 
 http://hexdocs.pm/argon2_elixir
 
-### License
+## Copyright and License
 
-Apache 2.0. Please read the argon2/LICENSE file for more details about the Argon2 license.
+Copyright (c) 2016 David Whitlock
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
