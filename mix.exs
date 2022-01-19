@@ -3,7 +3,7 @@ defmodule Argon2.Mixfile do
 
   @source_url "https://github.com/riverrun/argon2_elixir"
 
-  @version "2.4.0"
+  @version "2.4.1"
 
   @description """
   Argon2 password hashing algorithm for Elixir
@@ -57,7 +57,7 @@ defmodule Argon2.Mixfile do
         "CHANGELOG.md"
       ],
       maintainers: ["David Whitlock"],
-      licenses: ["Apache 2.0"],
+      licenses: ["Apache-2.0"],
       links: %{
         "Changelog" => "https://hexdocs.pm/argon2_elixir/changelog.html",
         "GitHub" => @source_url
