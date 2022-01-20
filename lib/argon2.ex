@@ -74,9 +74,7 @@ defmodule Argon2 do
   """
   @impl true
   def hash_pwd_salt(password, opts \\ []) do
-    password
-    |> Base.hash_password(Keyword.get(opts, :salt_len, 16)
-    |> Base.gen_salt(), opts)
+    Base.hash_password(password, Base.gen_salt(Keyword.get(opts, :salt_len, 16)), opts)
   end
 
   @doc """
