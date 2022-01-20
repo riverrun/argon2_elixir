@@ -2,9 +2,6 @@ defmodule Argon2 do
   @moduledoc """
   Elixir wrapper for the Argon2 password hashing function.
 
-  Most applications will just need to use the `add_hash/2` and `check_pass/3`
-  convenience functions in this module.
-
   For a lower-level API, see `Argon2.Base`.
 
   ## Configuration
@@ -48,14 +45,6 @@ defmodule Argon2 do
   alias Argon2.Base
 
   @doc """
-  Generate a random salt.
-
-  The default length for the salt is 16 bytes. We do not recommend using
-  a salt shorter than the default.
-  """
-  def gen_salt(salt_len \\ 16), do: :crypto.strong_rand_bytes(salt_len)
-
-  @doc """
   Hashes a password with a randomly generated salt.
 
   ## Options
@@ -85,7 +74,9 @@ defmodule Argon2 do
   """
   @impl true
   def hash_pwd_salt(password, opts \\ []) do
-    Base.hash_password(password, Keyword.get(opts, :salt_len, 16) |> gen_salt, opts)
+    password
+    |> Base.hash_password(Keyword.get(opts, :salt_len, 16)
+    |> Base.gen_salt(), opts)
   end
 
   @doc """

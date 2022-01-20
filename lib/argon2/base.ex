@@ -63,6 +63,14 @@ defmodule Argon2.Base do
   def encodedlen_nif(_, _, _, _, _, _), do: :erlang.nif_error(:not_loaded)
 
   @doc """
+  Generate a random salt.
+
+  The default length for the salt is 16 bytes. We do not recommend using
+  a salt shorter than the default.
+  """
+  def gen_salt(salt_len \\ 16), do: :crypto.strong_rand_bytes(salt_len)
+
+  @doc """
   Hash a password using Argon2.
 
   ## Options
@@ -70,8 +78,11 @@ defmodule Argon2.Base do
   There are six options:
 
     * `:t_cost` - time cost
+      * the default is 8
     * `:m_cost` - memory usage
+      * the default is 16 - this will produce a memory usage of 64 MiB (2 ^ 16 KiB)
     * `:parallelism` - number of parallel threads
+      * the default is 2
     * `:format` - output format
       * this value can be
         * `:encoded` - encoded with Argon2 crypt format
@@ -123,8 +134,8 @@ defmodule Argon2.Base do
   defp hash_opts(opts) do
     {
       Keyword.get(opts, :t_cost, Application.get_env(:argon2_elixir, :t_cost, 8)),
-      Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 17)),
-      Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 4)),
+      Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 16)),
+      Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 2)),
       Keyword.get(opts, :hashlen, 32),
       Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 2))
     }

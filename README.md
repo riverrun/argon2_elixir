@@ -22,7 +22,7 @@ Add `:argon2_elixir` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:argon2_elixir, "~> 2.0"}
+    {:argon2_elixir, "~> 3.0"}
   ]
 end
 ```

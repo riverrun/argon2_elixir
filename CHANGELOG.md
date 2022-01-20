@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v3.0.0 (2021-01-20)
+
+* Enhancements
+  * updated default memory cost and parallelism values
+    * memory cost (m_cost) is now 16 (64 MiB) and parallelism is now 2
+* Changes
+  * moved `gen_salt` to the `Base` module
+
 ## v2.4.1 (2021-01-19)
 
 * Changes
