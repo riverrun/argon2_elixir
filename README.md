@@ -50,6 +50,15 @@ There are many ways you can contribute to the development of this library, inclu
 * improving documentation
 * sharing your experiences with others
 
+### Development
+
+```bash
+$ git clone https://github.com/riverrun/argon2_elixir
+$ git submodule update --init --recursive
+$ mix do deps.get, compile
+$ mix test
+```
+
 ### Documentation
 
 http://hexdocs.pm/argon2_elixir
