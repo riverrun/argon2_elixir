@@ -17,19 +17,28 @@ password hashing methods.
 
 ## Installation
 
-Add `:argon2_elixir` to your list of dependencies in `mix.exs`:
+1.  Add `:argon2_elixir` to your list of dependencies in `mix.exs`:
 
-```elixir
-def deps do
-  [
-    {:argon2_elixir, "~> 3.0"}
-  ]
-end
-```
+    ```elixir
+    def deps do
+      [
+        {:argon2_elixir, "~> 3.0"}
+      ]
+    end
+    ```
+
+2.  Optional: during tests (and tests only), you may want to speed up the tests. If you have a `config/test.exs`, you can add:
+
+    ```elixir
+    config :argon2_elixir,
+      t_cost: 1,
+      m_cost: 8
+    ```
+
+## Configuration
 
 Configure `argon2_elixir` - see the documentation for
 [`Argon2.Stats`](https://hexdocs.pm/argon2_elixir/Argon2.Stats.html) for more details
-
 
 ## Comeonin wiki
 
