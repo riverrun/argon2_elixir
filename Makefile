@@ -52,7 +52,7 @@ else
 	ifeq ($(KERNEL_NAME), Darwin)
 		LIB_CFLAGS := -dynamiclib -undefined dynamic_lookup
 	endif
-	ifeq ($(KERNEL_NAME), $(filter $(KERNEL_NAME),OpenBSD FreeBSD NetBSD))
+	ifeq ($(KERNEL_NAME), $(filter $(KERNEL_NAME),OpenBSD FreeBSD NetBSD SunOS))
 		LIB_CFLAGS := -shared -fPIC
 	endif
 endif
