@@ -2,7 +2,7 @@ defmodule Argon2.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/riverrun/argon2_elixir"
-  @version "3.2.0"
+  @version "3.2.1"
   @description "Argon2 password hashing algorithm for Elixir"
 
   def project do
