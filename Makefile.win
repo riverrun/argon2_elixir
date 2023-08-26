@@ -46,7 +46,7 @@ clean:
 	del /Q /F priv
 
 Makefile.auto.win:
-	erl -noshell -s init stop -eval "io:setopts(standard_io, [{encoding, unicode}]), io:format(\"ERTS_INCLUDE_PATH=~ts/erts-~ts/include/\", [code:root_dir(), erlang:system_info(version)])." > $@
+	erl -noshell -eval "io:format(\"ERTS_INCLUDE_PATH=~ts/erts-~ts/include/\", [code:root_dir(), erlang:system_info(version)])." -s init stop > $@
 
 !IFDEF ERTS_INCLUDE_PATH
 priv\argon2_nif.dll:
