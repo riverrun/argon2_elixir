@@ -2,7 +2,7 @@ defmodule Argon2.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/riverrun/argon2_elixir"
-  @version "3.1.0"
+  @version "3.2.0"
   @description "Argon2 password hashing algorithm for Elixir"
 
   def project do
@@ -35,7 +35,7 @@ defmodule Argon2.Mixfile do
       {:comeonin, "~> 5.3"},
       {:elixir_make, "~> 0.6", runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.2.0", only: :dev, runtime: false}
+      {:dialyxir, "~> 1.3", only: :dev, runtime: false}
     ]
   end
 
