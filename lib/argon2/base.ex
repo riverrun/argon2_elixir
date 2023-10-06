@@ -78,11 +78,11 @@ defmodule Argon2.Base do
   There are six options:
 
     * `:t_cost` - time cost
-      * the default is 8
+      * the default is 3
     * `:m_cost` - memory usage
       * the default is 16 - this will produce a memory usage of 64 MiB (2 ^ 16 KiB)
     * `:parallelism` - number of parallel threads
-      * the default is 2
+      * the default is 4
     * `:format` - output format
       * this value can be
         * `:encoded` - encoded with Argon2 crypt format
@@ -133,9 +133,9 @@ defmodule Argon2.Base do
 
   defp hash_opts(opts) do
     {
-      Keyword.get(opts, :t_cost, Application.get_env(:argon2_elixir, :t_cost, 8)),
+      Keyword.get(opts, :t_cost, Application.get_env(:argon2_elixir, :t_cost, 3)),
       Keyword.get(opts, :m_cost, Application.get_env(:argon2_elixir, :m_cost, 16)),
-      Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 2)),
+      Keyword.get(opts, :parallelism, Application.get_env(:argon2_elixir, :parallelism, 4)),
       Keyword.get(opts, :hashlen, 32),
       Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 2))
     }

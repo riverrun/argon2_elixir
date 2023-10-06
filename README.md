@@ -23,7 +23,7 @@ password hashing methods.
     ```elixir
     def deps do
       [
-        {:argon2_elixir, "~> 3.0"}
+        {:argon2_elixir, "~> 4.0"}
       ]
     end
     ```

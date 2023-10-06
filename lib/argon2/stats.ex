@@ -12,11 +12,11 @@ defmodule Argon2.Stats do
 
     * t_cost - time cost
       * the amount of computation, given in number of iterations
-      * 8 is the default
+      * 3 is the default
     * m_cost - memory usage
       * 16 is the default - this will produce a memory usage of 64 MiB (2 ^ 16 KiB)
     * parallelism - number of parallel threads
-      * 2 is the default
+      * 4 is the default
     * argon2_type - argon2 variant to use
       * 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
       * 2 is the default (Argon2id)

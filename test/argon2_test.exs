@@ -21,7 +21,7 @@ defmodule Argon2Test do
   test "only output encoded hash" do
     result = Base.hash_password("password", "somesalt")
     assert is_binary(result)
-    assert String.starts_with?(result, "$argon2id$v=19$m=65536,t=8,p=2")
+    assert String.starts_with?(result, "$argon2id$v=19$m=65536,t=3,p=4")
   end
 
   test "only output raw hash" do
@@ -35,17 +35,19 @@ defmodule Argon2Test do
     assert is_binary(raw)
     assert is_binary(encoded)
     refute String.starts_with?(raw, "$argon2")
-    assert String.starts_with?(encoded, "$argon2id$v=19$m=65536,t=8,p=2")
+    assert String.starts_with?(encoded, "$argon2id$v=19$m=65536,t=3,p=4")
   end
 
   test "customizing parameters with config" do
-    Application.put_env(:argon2_elixir, :t_cost, 3)
+    Application.put_env(:argon2_elixir, :t_cost, 2)
     Application.put_env(:argon2_elixir, :m_cost, 12)
+    Application.put_env(:argon2_elixir, :parallelism, 2)
     Application.put_env(:argon2_elixir, :argon2_type, 2)
     result = Base.hash_password("password", "somesalt")
-    assert String.starts_with?(result, "$argon2id$v=19$m=4096,t=3,p=2")
+    assert String.starts_with?(result, "$argon2id$v=19$m=4096,t=2,p=2")
     Application.delete_env(:argon2_elixir, :t_cost)
     Application.delete_env(:argon2_elixir, :m_cost)
+    Application.delete_env(:argon2_elixir, :parallelism)
     Application.delete_env(:argon2_elixir, :argon2_type)
   end
 
