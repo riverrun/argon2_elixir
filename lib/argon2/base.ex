@@ -127,7 +127,7 @@ defmodule Argon2.Base do
   end
 
   defp load_nif do
-    path = :filename.join(:code.priv_dir(:argon2_elixir), 'argon2_nif')
+    path = :filename.join(:code.priv_dir(:argon2_elixir), "argon2_nif")
     :erlang.load_nif(path, 0)
   end
 
