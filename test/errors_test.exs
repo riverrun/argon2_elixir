@@ -35,9 +35,9 @@ defmodule Argon2.ErrorsTest do
   end
 
   test "various error messages" do
-    assert Base.error_nif(-12) == 'Time cost is too small'
-    assert Base.error_nif(-21) == 'Associated data pointer is NULL, but ad length is not 0'
-    assert Base.error_nif(-26) == 'There is no such version of Argon2'
-    assert Base.error_nif(-36) == 'Unknown error code'
+    assert Base.error_nif(-12) == ~c"Time cost is too small"
+    assert Base.error_nif(-21) == ~c"Associated data pointer is NULL, but ad length is not 0"
+    assert Base.error_nif(-26) == ~c"There is no such version of Argon2"
+    assert Base.error_nif(-36) == ~c"Unknown error code"
   end
 end

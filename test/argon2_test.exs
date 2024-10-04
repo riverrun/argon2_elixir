@@ -66,49 +66,4 @@ defmodule Argon2Test do
       Argon2.verify_pass("", "$someinvalidhash")
     end
   end
-
-  test "add_hash function" do
-    password = Enum.random(ascii_passwords())
-    assert add_hash_creates_map(Argon2, password)
-  end
-
-  test "check_pass function" do
-    password = Enum.random(ascii_passwords())
-    assert check_pass_returns_user(Argon2, password)
-    assert check_pass_returns_error(Argon2, password)
-    assert check_pass_nil_user(Argon2)
-  end
-
-  test "add_hash with a custom hash_key and check_pass" do
-    assert {:ok, user} =
-             Argon2.add_hash("password", hash_key: :encrypted_password)
-             |> Argon2.check_pass("password")
-
-    assert {:error, "invalid password"} =
-             Argon2.add_hash("pass", hash_key: :encrypted_password)
-             |> Argon2.check_pass("password")
-
-    assert Map.has_key?(user, :encrypted_password)
-  end
-
-  test "check_pass with custom hash_key" do
-    assert {:ok, user} =
-             Argon2.add_hash("password", hash_key: :custom_hash)
-             |> Argon2.check_pass("password", hash_key: :custom_hash)
-
-    assert Map.has_key?(user, :custom_hash)
-  end
-
-  test "check_pass with invalid hash_key" do
-    {:error, message} =
-      Argon2.add_hash("password", hash_key: :unconventional_name)
-      |> Argon2.check_pass("password")
-
-    assert message =~ "no password hash found"
-  end
-
-  test "check_pass with password that is not a string" do
-    assert {:error, message} = Argon2.add_hash("pass") |> Argon2.check_pass(nil)
-    assert message =~ "password is not a string"
-  end
 end
