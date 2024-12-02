@@ -90,7 +90,7 @@ defmodule Argon2 do
     case Base.verify_nif(hash, password, argon2_type(stored_hash)) do
       0 -> true
       -35 -> false
-      error -> raise ArgumentError, Base.handle_error(error)
+      error -> Base.handle_error(error)
     end
   end
 
