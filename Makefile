@@ -32,9 +32,16 @@ SRC = $(SRC_DIR)/argon2.c $(SRC_DIR)/core.c $(SRC_DIR)/blake2/blake2b.c\
       c_src/argon2_nif.c
 
 CFLAGS ?= -g -O3
-CFLAGS += -pthread -Wall -Wno-format-truncation
+CFLAGS += -pthread -Wall
 CFLAGS += -I"$(ERTS_INCLUDE_DIR)"
 CFLAGS += -I$(SRC_INC) -I$(SRC_DIR) -Ic_src
+
+# Compiler-specific flags
+CC_VERSION := $(shell $(CC) --version 2>/dev/null)
+ifneq ($(findstring gcc,$(CC_VERSION)),)
+	# GCC-specific flags
+	CFLAGS += -Wno-format-truncation
+endif
 
 KERNEL_NAME := $(shell uname -s)
 
