@@ -40,7 +40,9 @@ defmodule Argon2 do
   to withstand parallel attacks that use GPUs or other dedicated hardware.
   """
 
-  use Comeonin
+  if Code.loaded?(Comeonin) do
+    use Comeonin
+  end
 
   alias Argon2.Base
 
