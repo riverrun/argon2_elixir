@@ -49,6 +49,21 @@ defmodule Argon2.ErrorsTest do
     end
   end
 
+  test "rejects non-ASCII bytes in a stored hash" do
+    {password, hash} =
+      Enum.find_value(1..100, fn i ->
+        password = "password#{i}"
+        hash = Base.hash_password(password, "somesaltSOMESALT", t_cost: 1, m_cost: 8)
+        if hash |> String.split("$") |> List.last() |> String.contains?("/"), do: {password, hash}
+      end)
+
+    tampered = String.replace(hash, "/", <<0x80>>, global: false)
+
+    assert_raise ArgumentError, "Decoding failed", fn ->
+      Argon2.verify_pass(password, tampered)
+    end
+  end
+
   test "various error messages" do
     assert Base.error_nif(-12) == ~c"Time cost is too small"
     assert Base.error_nif(-21) == ~c"Associated data pointer is NULL, but ad length is not 0"

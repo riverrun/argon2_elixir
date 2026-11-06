@@ -162,13 +162,21 @@ static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv *env, int argc, const ERL_NIF_TE
 	ErlNifBinary pwd;
 	unsigned int type_int;
 	argon2_type type;
-	int ret;
+	int ret, i;
 
 	if (argc != 3 || enif_get_string(env, argv[0], encoded, sizeof(encoded), ERL_NIF_LATIN1) <= 0 ||
 			!enif_inspect_binary(env, argv[1], &pwd) ||
 			!enif_get_uint(env, argv[2], &type_int) ||
 			type_int > Argon2_id)
 		return enif_make_badarg(env);
+
+	/* The reference base64 decoder passes a plain char to a lookup that
+	 * assumes values 0..255, so on signed-char platforms such as x86-64 it
+	 * reads bytes 0x80-0xFF as '/'. No valid encoded hash contains them. */
+	for (i = 0; encoded[i]; i++) {
+		if ((unsigned char)encoded[i] > 0x7F)
+			return enif_make_int(env, ARGON2_DECODING_FAIL);
+	}
 
 	type = (argon2_type)type_int;
 
