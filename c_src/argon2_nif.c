@@ -77,11 +77,13 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]
 	if (!hash) {
 		return enif_make_int(env, ARGON2_MEMORY_ALLOCATION_ERROR);
 	}
+	hash[0] = '\0';
 
 	encoded = malloc(encodedlen + 1);
 	if (!encoded) {
 		return enif_make_int(env, ARGON2_MEMORY_ALLOCATION_ERROR);
 	}
+	encoded[0] = '\0';
 
 	context.out = out;
 	context.outlen = (uint32_t)hashlen;
