@@ -34,6 +34,15 @@ defmodule Argon2.ErrorsTest do
     end
   end
 
+  test "the NIFs reject arguments outside the supported ranges" do
+    assert_raise ArgumentError, fn -> Base.encodedlen_nif(1, 32, 1, 16, 32, 2) end
+    assert_raise ArgumentError, fn -> Base.encodedlen_nif(1, 10, 1, 16, 32, 3) end
+
+    assert_raise ArgumentError, fn ->
+      Base.hash_nif(1, 10, 1, "pw", "somesalt", 0, 32, 0xFFFFFFFF, 2, 0)
+    end
+  end
+
   test "various error messages" do
     assert Base.error_nif(-12) == ~c"Time cost is too small"
     assert Base.error_nif(-21) == ~c"Associated data pointer is NULL, but ad length is not 0"

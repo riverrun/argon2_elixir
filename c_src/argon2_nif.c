@@ -34,6 +34,17 @@
 
 #define MAX_ENCODEDLEN 1024
 
+/* m is the log2 of the memory cost in KiB: 3 is the reference minimum for
+ * one lane (8 KiB) and 22 (4 GiB) is far above any practical setting while
+ * keeping 1U << m defined. The salt and hash limits keep every encoded hash
+ * this library can produce shorter than MAX_ENCODEDLEN, so it can be verified.
+ * Together with the MAX_ENCODEDLEN cap on the encoded buffer capacity, they
+ * keep the buffer size arithmetic below from wrapping. */
+#define MIN_M_COST_LOG2 3
+#define MAX_M_COST_LOG2 22
+#define MAX_SALTLEN 64
+#define MAX_HASHLEN 512
+
 ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
 	ErlNifBinary pwd, salt;
@@ -57,12 +68,12 @@ ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]
 			!enif_get_uint(env, argv[9], &version))
 		return enif_make_badarg(env);
 
+	if (m < MIN_M_COST_LOG2 || m > MAX_M_COST_LOG2 || type_int > Argon2_id ||
+			salt.size > MAX_SALTLEN || hashlen > MAX_HASHLEN || encodedlen > MAX_ENCODEDLEN)
+		return enif_make_badarg(env);
+
 	m_cost = 1U << m;
 	type = (argon2_type)type_int;
-
-	if (hashlen > ARGON2_MAX_OUTLEN) {
-		return enif_make_int(env, ARGON2_OUTPUT_TOO_LONG);
-	}
 
 	if (hashlen < ARGON2_MIN_OUTLEN) {
 		return enif_make_int(env, ARGON2_OUTPUT_TOO_SHORT);
@@ -155,7 +166,8 @@ static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv *env, int argc, const ERL_NIF_TE
 
 	if (argc != 3 || !enif_get_string(env, argv[0], encoded, sizeof(encoded), ERL_NIF_LATIN1) ||
 			!enif_inspect_binary(env, argv[1], &pwd) ||
-			!enif_get_uint(env, argv[2], &type_int))
+			!enif_get_uint(env, argv[2], &type_int) ||
+			type_int > Argon2_id)
 		return enif_make_badarg(env);
 
 	type = (argon2_type)type_int;
@@ -188,6 +200,10 @@ static ERL_NIF_TERM argon2_encodedlen_nif(ErlNifEnv *env, int argc, const ERL_NI
 			!enif_get_uint(env, argv[3], &saltlen) ||
 			!enif_get_uint(env, argv[4], &hashlen) ||
 			!enif_get_uint(env, argv[5], &type_int))
+		return enif_make_badarg(env);
+
+	if (m < MIN_M_COST_LOG2 || m > MAX_M_COST_LOG2 || type_int > Argon2_id ||
+			saltlen > MAX_SALTLEN || hashlen > MAX_HASHLEN)
 		return enif_make_badarg(env);
 
 	m_cost = 1U << m;
