@@ -34,6 +34,26 @@ defmodule Argon2.ErrorsTest do
     end
   end
 
+  test "rejects out-of-range options with a descriptive error" do
+    for m_cost <- [2, 23, 19_456] do
+      assert_raise ArgumentError, ~r/m_cost must be an integer from 3 to 22/, fn ->
+        Base.hash_password("password", "somesalt", m_cost: m_cost)
+      end
+    end
+
+    assert_raise ArgumentError, ~r/argon2_type must be 0/, fn ->
+      Base.hash_password("password", "somesalt", argon2_type: 3)
+    end
+
+    assert_raise ArgumentError, ~r/hashlen must be at most 512/, fn ->
+      Base.hash_password("password", "somesalt", hashlen: 513)
+    end
+
+    assert_raise ArgumentError, ~r/salt must be at most 64 bytes/, fn ->
+      Base.hash_password("password", String.duplicate("s", 65))
+    end
+  end
+
   test "the NIFs reject arguments outside the supported ranges" do
     assert_raise ArgumentError, fn -> Base.encodedlen_nif(1, 32, 1, 16, 32, 2) end
     assert_raise ArgumentError, fn -> Base.encodedlen_nif(1, 10, 1, 16, 32, 3) end
