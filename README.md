@@ -41,6 +41,21 @@ password hashing methods.
 Configure `argon2_elixir` - see the documentation for
 [`Argon2.Stats`](https://hexdocs.pm/argon2_elixir/Argon2.Stats.html) for more details
 
+### Threads
+
+With `parallelism` above 1, every hash and verification starts that many OS
+threads from the NIF, four times per pass. On a server hashing many passwords
+at once, `parallelism: 1` avoids oversubscribing the CPU.
+
+To build the NIF without threads, set `ARGON2_NO_THREADS=1` when compiling it:
+
+```sh
+ARGON2_NO_THREADS=1 mix deps.compile argon2_elixir --force
+```
+
+Hashes are unchanged, but the lanes are computed one after another, so a
+`parallelism` above 1 no longer makes a single hash faster.
+
 ## Comeonin wiki
 
 See the [Comeonin wiki](https://github.com/riverrun/comeonin/wiki) for more

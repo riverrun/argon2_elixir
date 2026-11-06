@@ -43,6 +43,11 @@ ifneq ($(findstring gcc,$(CC_VERSION)),)
 	CFLAGS += -Wno-format-truncation
 endif
 
+# Opt-in: compute lanes sequentially instead of starting threads in the NIF
+ifeq ($(ARGON2_NO_THREADS),1)
+	CFLAGS += -DARGON2_NO_THREADS
+endif
+
 KERNEL_NAME := $(shell uname -s)
 
 PRIV_DIR = $(MIX_APP_PATH)/priv
