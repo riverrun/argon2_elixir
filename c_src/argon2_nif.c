@@ -164,7 +164,7 @@ static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv *env, int argc, const ERL_NIF_TE
 	argon2_type type;
 	int ret;
 
-	if (argc != 3 || !enif_get_string(env, argv[0], encoded, sizeof(encoded), ERL_NIF_LATIN1) ||
+	if (argc != 3 || enif_get_string(env, argv[0], encoded, sizeof(encoded), ERL_NIF_LATIN1) <= 0 ||
 			!enif_inspect_binary(env, argv[1], &pwd) ||
 			!enif_get_uint(env, argv[2], &type_int) ||
 			type_int > Argon2_id)

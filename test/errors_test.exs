@@ -43,6 +43,12 @@ defmodule Argon2.ErrorsTest do
     end
   end
 
+  test "verify_nif rejects a stored hash longer than its buffer" do
+    assert_raise ArgumentError, fn ->
+      Base.verify_nif(~c"$" ++ List.duplicate(?a, 1023), "pw", 2)
+    end
+  end
+
   test "various error messages" do
     assert Base.error_nif(-12) == ~c"Time cost is too small"
     assert Base.error_nif(-21) == ~c"Associated data pointer is NULL, but ad length is not 0"
