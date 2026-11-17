@@ -40,8 +40,6 @@ defmodule Argon2 do
   to withstand parallel attacks that use GPUs or other dedicated hardware.
   """
 
-  use Comeonin
-
   alias Argon2.Base
 
   @doc """
@@ -72,7 +70,6 @@ defmodule Argon2 do
       false
 
   """
-  @impl true
   def hash_pwd_salt(password, opts \\ []) do
     Base.hash_password(password, Base.gen_salt(Keyword.get(opts, :salt_len, 16)), opts)
   end
@@ -83,7 +80,6 @@ defmodule Argon2 do
 
   See the documentation for `hash_pwd_salt/2` for examples of using this function.
   """
-  @impl true
   def verify_pass(password, stored_hash) do
     hash = :binary.bin_to_list(stored_hash)
 
@@ -92,6 +88,27 @@ defmodule Argon2 do
       -35 -> false
       error -> Base.handle_error(error)
     end
+  end
+
+  @doc """
+  Runs the password hash function, but always returns false.
+
+  This function is intended to make it more difficult for any potential
+  attacker to find valid usernames by using timing attacks. This function
+  is only useful if it is used as part of a policy of hiding usernames.
+
+  > #### Note {: .note}
+  > This function is resource-intensive. For a lighter alternative, consider 
+  > adding a sleep delay to mimic the execution time of the hash function.
+
+  ## Options
+
+  This function should be called with the same options as those used by
+  `hash_pwd_salt/2`.
+  """
+  def no_user_verify(opts \\ []) do
+    hash_pwd_salt("", opts)
+    false
   end
 
   defp argon2_type("$argon2id" <> _), do: 2

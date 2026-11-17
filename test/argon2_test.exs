@@ -2,21 +2,7 @@ defmodule Argon2Test do
   use ExUnit.Case
   doctest Argon2
 
-  import Comeonin.BehaviourTestHelper
-
   alias Argon2.Base
-
-  test "implementation of Comeonin.PasswordHash behaviour" do
-    password = Enum.random(ascii_passwords())
-    assert correct_password_true(Argon2, password)
-    assert wrong_password_false(Argon2, password)
-  end
-
-  test "Comeonin.PasswordHash behaviour with non-ascii characters" do
-    password = Enum.random(non_ascii_passwords())
-    assert correct_password_true(Argon2, password)
-    assert wrong_password_false(Argon2, password)
-  end
 
   test "only output encoded hash" do
     result = Base.hash_password("password", "somesalt")
