@@ -79,8 +79,9 @@ defmodule Argon2.Base do
 
     * `:t_cost` - time cost
       * the default is 3
-    * `:m_cost` - memory usage
+    * `:m_cost` - memory usage, as the log2 of the memory in KiB
       * the default is 16 - this will produce a memory usage of 64 MiB (2 ^ 16 KiB)
+      * this value must be an integer from 3 to 22
     * `:parallelism` - number of parallel threads
       * the default is 4
     * `:format` - output format
@@ -91,9 +92,12 @@ defmodule Argon2.Base do
       * `:encoded` is the default
     * `:hashlen` - length of the hash (in bytes)
       * the default is 32
+      * this value must be at most 512
     * `:argon2_type` - Argon2 type
       * this value should be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id)
       * the default is 2 (Argon2id)
+
+  The salt must be at most 64 bytes long.
 
   The `t_cost`, `m_cost`, `parallelism` and `argon2_type` can also be
   set in the config. See the documentation for Argon2.Stats for more
@@ -113,6 +117,7 @@ defmodule Argon2.Base do
   """
   def hash_password(password, salt, opts \\ []) do
     {t, m, p, hashlen, argon2_type} = options = hash_opts(opts)
+    validate_options!(m, hashlen, argon2_type, salt)
     format = output_opts(opts[:format])
 
     encodedlen =
@@ -139,6 +144,28 @@ defmodule Argon2.Base do
       Keyword.get(opts, :hashlen, 32),
       Keyword.get(opts, :argon2_type, Application.get_env(:argon2_elixir, :argon2_type, 2))
     }
+  end
+
+  defp validate_options!(m_cost, hashlen, argon2_type, salt) do
+    if m_cost not in 3..22 do
+      raise ArgumentError,
+            "m_cost must be an integer from 3 to 22 (the log2 of the memory in KiB, " <>
+              "so 15 means 32 MiB), got: #{inspect(m_cost)}"
+    end
+
+    if argon2_type not in 0..2 do
+      raise ArgumentError,
+            "argon2_type must be 0 (Argon2d), 1 (Argon2i) or 2 (Argon2id), " <>
+              "got: #{inspect(argon2_type)}"
+    end
+
+    if is_integer(hashlen) and hashlen > 512 do
+      raise ArgumentError, "hashlen must be at most 512 bytes, got: #{hashlen}"
+    end
+
+    if is_binary(salt) and byte_size(salt) > 64 do
+      raise ArgumentError, "salt must be at most 64 bytes, got: #{byte_size(salt)}"
+    end
   end
 
   defp output_opts(:raw_hash), do: 1
